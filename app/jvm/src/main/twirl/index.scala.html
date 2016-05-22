@@ -1,0 +1,10 @@
+@(content:Option[Html] = None)
+<html>
+  <head title="Kappa notebook">
+    @html.libs()
+    @html.runner()
+  </head>
+  <body>
+      @html.main(content)
+  </body>
+</html>
