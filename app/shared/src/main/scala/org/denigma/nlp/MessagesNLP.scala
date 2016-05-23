@@ -11,6 +11,7 @@ object MessagesNLP {
         .addConcreteType[ServerErrors]
         .addConcreteType[Connected]
         .addConcreteType[Disconnected]
+        .addConcreteType[Annotate]
 
   }
 
@@ -21,5 +22,10 @@ object MessagesNLP {
   case class Connected(username: String, channel: String, users: List[String]) extends Message
 
   case class Disconnected(username: String, channel: String, users: List[String]) extends Message
+
+  case class Annotate(text: String) extends Message
+
+  case object Empty extends Message
+
 
 }

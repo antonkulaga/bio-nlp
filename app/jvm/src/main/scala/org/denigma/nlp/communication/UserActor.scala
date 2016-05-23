@@ -23,20 +23,20 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-class UserActor(val username: String, servers: ActorRef) extends Messenger
+class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
 
-  def readResource(path: String): Iterator[String] = {
-    val stream: InputStream = getClass.getResourceAsStream(path)
-    scala.io.Source.fromInputStream( stream ).getLines
-  }
-
+  println("USER ACTOR STARTS!")
 
   protected def onTextMessage: Receive = {
     case SocketMessages.IncomingMessage(channel, uname, TextMessage.Strict(text), time) =>
   }
 
-  protected def otherKappaMessages: Receive  = {
+  protected def annotationMessages: Receive  = {
+    case MessagesNLP.Annotate(text) =>
+  }
+
+  protected def otherMessages: Receive  = {
     case other => log.error(s"unexpected $other")
   }
 
@@ -44,7 +44,7 @@ class UserActor(val username: String, servers: ActorRef) extends Messenger
   protected def onBinaryMessage: Receive = {
     case SocketMessages.IncomingMessage(channel, uname, message: BinaryMessage.Strict, time) =>
       val mes = Unpickle[MessagesNLP.Message].fromBytes(message.data.toByteBuffer)
-      val fun = (otherKappaMessages)
+      val fun = annotationMessages.orElse(otherMessages)
       fun(mes)
     //log.error(s"something binary received on $channel by $username")
   }

@@ -1,11 +1,12 @@
 package org.denigma.nlp.communication
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-//import org.denigma.kappa.messages.{Connected, Disconnected, KappaUser}
+//import org.denigma.kappa.messages.{Connectсed, Disconnected, KappaUser}
 
 class RoomActor(channel: String) extends Actor with ActorLogging{
 
   var participants: Map[String, ActorRef] = Map.empty[String, ActorRef]
+
 
   override def receive: Receive = {
     case SocketMessages.UserJoined(name, _, actorRef, time) =>

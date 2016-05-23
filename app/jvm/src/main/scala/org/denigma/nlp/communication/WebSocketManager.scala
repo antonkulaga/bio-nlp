@@ -12,6 +12,7 @@ import boopickle.DefaultBasic._
 import com.typesafe.config.Config
 import org.denigma.nlp
 import org.denigma.nlp.MessagesNLP
+import org.denigma.nlp.extractions.ExtractorWorker
 
 
 /**
@@ -22,6 +23,8 @@ class WebSocketManager(system: ActorSystem) {
   val config: Config = system.settings.config
 
   val allRoom = system.actorOf(Props(classOf[RoomActor], "all"))
+
+  val extractor = system.actorOf(Props(classOf[ExtractorWorker], config))
 
   protected def makeIncomingFlow(channel: String, username: String) = Flow[Message].map {  case mes => SocketMessages.IncomingMessage(channel, username, mes) }
 
@@ -37,7 +40,7 @@ class WebSocketManager(system: ActorSystem) {
   def openChannel(channel: String, username: String = "guest"): Flow[Message, Message, Any] = {
     val partial: Graph[FlowShape[Message, Message], ActorRef] = GraphDSL.create(
       Source.actorPublisher[OutgoingMessage](Props(classOf[UserActor],
-        username))
+        username, extractor))
     )
     {
       implicit builder => user =>

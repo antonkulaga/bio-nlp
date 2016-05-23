@@ -1,6 +1,6 @@
 package org.denigma.nlp.communication
 
-import java.io.{File => JFile}
+import java.io.{InputStream, File => JFile}
 import java.nio.ByteBuffer
 import java.time._
 
@@ -24,6 +24,12 @@ trait Messenger extends Actor
   implicit val materializer = ActorMaterializer()
 
   def username: String
+
+
+  def readResource(path: String): Iterator[String] = {
+    val stream: InputStream = getClass.getResourceAsStream(path)
+    scala.io.Source.fromInputStream( stream ).getLines
+  }
 
 
   val MaxBufferSize = 10000

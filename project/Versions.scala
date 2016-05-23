@@ -10,7 +10,7 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 
 	val betterFiles = "2.16.0"
 
-	val reach = "1.2.2"
+	val reach = "1.2.3"
 
 }
 
