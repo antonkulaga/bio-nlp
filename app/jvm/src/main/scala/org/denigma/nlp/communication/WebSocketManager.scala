@@ -11,7 +11,7 @@ import org.denigma.nlp.communication.SocketMessages._
 import boopickle.DefaultBasic._
 import com.typesafe.config.Config
 import org.denigma.nlp
-import org.denigma.nlp.extractions.ExtractorWorker
+import org.denigma.nlp.extractions.NLPActor
 import org.denigma.nlp.messages.MessagesNLP
 
 

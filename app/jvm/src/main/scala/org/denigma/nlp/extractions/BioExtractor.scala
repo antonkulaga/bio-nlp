@@ -24,40 +24,14 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
   val contextConfig = config.getConfig("contextEngine.params").root
   val contextEngineParams: Map[String, String] = edu.arizona.sista.reach.context.createContextEngineParams(contextConfig)
   val reach = new ReachSystem(contextEngineType=contextEngineType, contextParams=contextEngineParams)
+  println("I AM READY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-
-  val docId = "testdoc"
-  val chunkId = "1"
-
-  //def anotator = reach.processor
-  println("""==============bio extractor works!============="""+config)
-
-  /*
-  implicit def biomention2annotation(mention: BioMention): MessagesNLP.Annotation = {
-    mention.modifications
-    ???
-    //MessagesNLP.Annotation(mention.displayLabel, mention.arguments, mention.context)
-  }
-  */
-
-
-  /*
-  def getBioMentions(text: String, verbose: Boolean = true): Seq[BioMention] = {
-    val entry = FriesEntry(docId, chunkId, "example", "example", isTitle = false, text)
-    Try(reach.extractFrom(entry)) match {
-      case Success(result) =>
-        result
-      case Failure(th) =>
-        print("ERROR: getBioMentions failed on sentence: " + text)
-        Seq.empty[BioMention]
-    }
-  }
-  */
-
-  def annotate(text: String): (Document, Seq[BioMention]) = {
-    val doc = reach.processor.annotate(text, keepText = true)
-    val result = (doc, reach.extractFrom(doc))
-    result
+  def annotate(text: String, id: String = "paper", chunkId: String = ""): (Document, Seq[BioMention]) = {
+    val doc = reach.mkDoc(text, id, chunkId)
+    //val doc: Document = reach.processor.annotate(text, keepText = true)
+    //doc.id
+    val mentions = reach.extractFrom(doc)
+    (doc, mentions)
   }
 
   /*
@@ -85,7 +59,7 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
   }
   */
 
-
+/*
   def testLoad(paperName: String = "PMC88976.nxml") = {
     def now = new Date()
 
@@ -104,5 +78,6 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
     }
     //other
   }
+  */
 
 }

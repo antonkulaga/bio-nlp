@@ -12,7 +12,7 @@ object MessagesNLP {
         .addConcreteType[Connected]
         .addConcreteType[Disconnected]
         .addConcreteType[Annotate]
-        .addConcreteType[ReachStatus]
+        .addConcreteType[NLPReady]
 
   }
 
@@ -26,7 +26,7 @@ object MessagesNLP {
 
   case class Annotate(text: String) extends Message
 
-  case class ReachStatus(ready: Boolean) extends Message
+  case class NLPReady(username: String) extends Message
 
   case object Empty extends Message
 /* case class Annotation(displaLabel: String,

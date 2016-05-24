@@ -10,22 +10,22 @@ import akka.stream.Materializer
 import better.files.File
 import com.typesafe.config.Config
 import org.denigma.nlp.communication.WebSocketManager
-import org.denigma.nlp.extractions.ExtractorWorker
+import org.denigma.nlp.extractions.NLPActor
 import org.denigma.nlp.pages.{Head, Pages, WebSockets}
 
 class Router(files: File)(implicit fm: Materializer, system: ActorSystem) extends Directives {
 
   implicit def ctx = system.dispatcher
 
+  lazy val config: Config = system.settings.config
+
+  val extractor: ActorRef = system.actorOf(Props(classOf[NLPActor], config)/*.withDispatcher("reach-dispatcher")*/) //dedicated thread per NLP
+
   val sessionController: SessionController = new InMemorySessionController
 
   val loginController: InMemoryLoginController = new InMemoryLoginController()
 
   loginController.addUser(LoginInfo("admin", "test2test", "test@email"))
-
-  val config: Config = system.settings.config
-
-  val extractor: ActorRef = system.actorOf(Props(classOf[ExtractorWorker], config)/*.withDispatcher("reach-dispatcher")*/) //dedicated thread per NLP
 
   val transport = new WebSocketManager(system, extractor = extractor)
 

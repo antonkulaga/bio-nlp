@@ -58,6 +58,12 @@ case class WebSocketTransport(channel: String, username: String) extends WebSock
 
 
   override val connected = Var(false)
+  lazy val NLPready = Var(false)
+  /*
+  lazy val ready: Rx[Boolean] = Rx {
+    connected() && NLPready()
+  }
+  */
 
   input.triggerLater{
     onInput(input.now)
@@ -66,35 +72,28 @@ case class WebSocketTransport(channel: String, username: String) extends WebSock
   def collect[Output](partialFunction: PartialFunction[Input, Output])(until: PartialFunction[Input, Boolean]) = {
     new Collecter[Input, Output](input)(partialFunction)(until).future
   }
-  /*
-  def collect[Output](until: Input => Boolean)(partialFunction: PartialFunction[Input, Output]) = {
-    new Collecter[Input, Output](input, until)(partialFunction).future
-  }
 
-  dellect[Result](message: Output, until: Input=> Boolean)(zero: Result)(foldLeft: PartialFunction): Future[Result] = {
-    //println("ask is used for message "+message)
-    val expectation = TimeoutExpectation[Input, Result](input, timeout)(partial)
-    output() = message
-    expectation.future
-  }
-  */
 
   protected def onInput(inp: Input) = inp match {
     case MessagesNLP.Connected(uname, ch, list) if uname==username /*&& ch == channel*/ =>
       println(s"connection of user $username to $channel established")
       connected() = true
+
     case MessagesNLP.Disconnected(uname, ch, list) if uname==username /* && ch == channel */ =>
       println(s"user $username diconnected from $channel")
       connected() = false
 
+    case MessagesNLP.NLPReady(uname) if uname==username =>
+      NLPready() = true
+
     case _=> //do nothing
   }
 
-  override def send(message: Output): Unit = if(connected.now) {
+  override def send(message: Output): Unit = if(NLPready.now) { //TODO/ FIX THIS SUPERBUGGY thing
     val mes = bytes2message(pickle(message))
     send(mes)
   } else {
-    connected.triggerOnce{
+    NLPready.triggerOnce{
       case true =>
         send(message)
       case false =>

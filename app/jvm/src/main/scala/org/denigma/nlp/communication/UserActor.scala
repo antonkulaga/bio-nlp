@@ -1,27 +1,14 @@
 package org.denigma.nlp.communication
 
-import java.io.{InputStream, File => JFile}
-import java.nio.ByteBuffer
-import java.time._
-import java.util.UUID
+import java.io.{File => JFile}
 
-import akka.Done
-import akka.actor.Actor.Receive
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.ActorRef
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage}
-import akka.stream.{ActorMaterializer, IOResult}
-import akka.stream.actor.{ActorPublisher, ActorPublisherMessage}
-import akka.stream.scaladsl.{FileIO, Sink, Source}
-import akka.util.ByteString
+import akka.stream.actor.ActorPublisherMessage
 import boopickle.DefaultBasic._
-import org.denigma.nlp.communication.SocketMessages.OutgoingMessage
 import org.denigma.nlp.messages.MessagesNLP
 
-import scala.annotation.tailrec
-import scala.collection.immutable.SortedSet
-import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 
 class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
@@ -41,7 +28,6 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
   }
 
   def onMessageNLP = {
-    println("MESSAGE RECEIVED")
     annotationMessages.orElse(otherMessages)
   }
 
@@ -58,7 +44,13 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
       val d = Pickle.intoBytes[MessagesNLP.Message](s)
       send(d)
 
+    case WorkMessages.ReachReady(true) =>
+      val mess = MessagesNLP.NLPReady(username)
+      val d = Pickle.intoBytes[MessagesNLP.Message](mess)
+      send(d)
+
     case result: MessagesNLP.Connected =>
+      nlp ! WorkMessages.AskStatus(self)
       val d = Pickle.intoBytes[MessagesNLP.Message](result)
       send(d)
 

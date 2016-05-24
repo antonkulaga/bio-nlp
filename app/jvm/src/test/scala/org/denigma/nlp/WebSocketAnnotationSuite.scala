@@ -9,7 +9,7 @@ import better.files.File
 import boopickle.DefaultBasic._
 import net.ceedubs.ficus.Ficus._
 import org.denigma.nlp.communication.WebSocketManager
-import org.denigma.nlp.extractions.ExtractorWorker
+import org.denigma.nlp.extractions.NLPActor
 import org.denigma.nlp.pages.WebSockets
 
 import scala.List
@@ -18,7 +18,7 @@ import scala.concurrent.duration._
 
 class WebSocketAnnotationSuite extends BasicWebSocketSuite {
 
-  val extractor: ActorRef = system.actorOf(Props(classOf[ExtractorWorker], config))
+  val extractor: ActorRef = system.actorOf(Props(classOf[NLPActor], config))
 
   val transport = new WebSocketManager(system, extractor)
 

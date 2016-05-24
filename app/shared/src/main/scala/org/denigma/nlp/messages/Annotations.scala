@@ -8,6 +8,7 @@ object Annotations {
     import boopickle.Default._
     implicit val simpleMessagePickler: CompositePickler[Annotation] = compositePickler[Annotation]
       .addConcreteType[DocumentAnnotations]
+        .addConcreteType[BioMention]
 
 
   }
@@ -24,6 +25,13 @@ object Annotations {
 
     def hasId = id != ""
   }
+
+  case class BioMention(
+                       displayLabel: String,
+                       labels: List[String],
+                       foundBy: String,
+                       context: Map[String, Seq[String]]
+                       )
 
   case class Sentence(
                        /** Actual tokens in this sentence */
