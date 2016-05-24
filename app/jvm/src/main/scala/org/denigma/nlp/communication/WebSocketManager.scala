@@ -11,20 +11,16 @@ import org.denigma.nlp.communication.SocketMessages._
 import boopickle.DefaultBasic._
 import com.typesafe.config.Config
 import org.denigma.nlp
-import org.denigma.nlp.MessagesNLP
 import org.denigma.nlp.extractions.ExtractorWorker
+import org.denigma.nlp.messages.MessagesNLP
 
 
 /**
   * Websocket transport that unplickles/pickles messages
   */
-class WebSocketManager(system: ActorSystem) {
-
-  val config: Config = system.settings.config
+class WebSocketManager(system: ActorSystem, extractor: ActorRef ) {
 
   val allRoom = system.actorOf(Props(classOf[RoomActor], "all"))
-
-  val extractor = system.actorOf(Props(classOf[ExtractorWorker], config))
 
   protected def makeIncomingFlow(channel: String, username: String) = Flow[Message].map {  case mes => SocketMessages.IncomingMessage(channel, username, mes) }
 

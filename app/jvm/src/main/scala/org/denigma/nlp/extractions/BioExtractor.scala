@@ -12,6 +12,7 @@ import edu.arizona.sista.reach.context.ContextEngineFactory.Engine
 import edu.arizona.sista.reach.extern.export._
 import edu.arizona.sista.reach.mentions._
 import edu.arizona.sista.reach.nxml._
+import org.denigma.nlp.messages.MessagesNLP
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -22,8 +23,8 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
   val contextEngineType = Engine.withName(config.getString("contextEngine.type"))
   val contextConfig = config.getConfig("contextEngine.params").root
   val contextEngineParams: Map[String, String] = edu.arizona.sista.reach.context.createContextEngineParams(contextConfig)
- /*
   val reach = new ReachSystem(contextEngineType=contextEngineType, contextParams=contextEngineParams)
+
 
   val docId = "testdoc"
   val chunkId = "1"
@@ -31,8 +32,17 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
   //def anotator = reach.processor
   println("""==============bio extractor works!============="""+config)
 
+  /*
+  implicit def biomention2annotation(mention: BioMention): MessagesNLP.Annotation = {
+    mention.modifications
+    ???
+    //MessagesNLP.Annotation(mention.displayLabel, mention.arguments, mention.context)
+  }
+  */
 
-  def getBioMentions(text: String, verbose: Boolean = false): Seq[BioMention] = {
+
+  /*
+  def getBioMentions(text: String, verbose: Boolean = true): Seq[BioMention] = {
     val entry = FriesEntry(docId, chunkId, "example", "example", isTitle = false, text)
     Try(reach.extractFrom(entry)) match {
       case Success(result) =>
@@ -42,10 +52,11 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
         Seq.empty[BioMention]
     }
   }
+  */
 
-  def annotate(text: String): Seq[BioMention] = {
+  def annotate(text: String): (Document, Seq[BioMention]) = {
     val doc = reach.processor.annotate(text, keepText = true)
-    val result = reach.extractFrom(doc)
+    val result = (doc, reach.extractFrom(doc))
     result
   }
 
@@ -94,5 +105,4 @@ class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
     //other
   }
 
-*/
 }

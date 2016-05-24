@@ -1,7 +1,4 @@
 -J-Xss256M
--J-Xms1024m
+-J-Xms512m
 -J-Xmx6G
 -J-XX:+UseConcMarkSweepGC
--J-XX:+CMSClassUnloadingEnabled
--J-XX:+UseCompressedClassPointers
--J-XX:+UseCompressedOops

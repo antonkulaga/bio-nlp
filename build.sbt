@@ -112,5 +112,6 @@ lazy val root = Project("root",file("."),settings = commonSettings)
     packageSummary := "bio-nlp",
     packageDescription := """BIO NLP akka-http service for nuggets extraction""",
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint", "-J-Xss5M"),
-    initialCommands in (Test, console) := Console.out
+    initialCommands in (Test, console) := Console.out,
+    debugSettings := Some(spray.revolver.DebugSettings(5005, false))
   ) dependsOn appJVM aggregate(appJVM, appJS) enablePlugins JavaServerAppPackaging

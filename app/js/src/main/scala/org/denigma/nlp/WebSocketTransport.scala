@@ -1,15 +1,14 @@
 package org.denigma.nlp
 
 import org.denigma.controls.sockets.WebSocketTransport1
-import org.denigma.nlp.MessagesNLP.{Connected, Disconnected}
 import org.scalajs.dom
+import org.denigma.nlp.messages.MessagesNLP
 import rx._
 import org.denigma.binding.extensions._
-
-
 import java.nio.ByteBuffer
 
 import boopickle.DefaultBasic._
+
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import org.denigma.controls.sockets._
 import org.scalajs.dom
@@ -17,6 +16,7 @@ import org.scalajs.dom.raw.WebSocket
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx.{Rx, Var}
 import org.denigma.binding.extensions._
+import org.denigma.nlp.messages.MessagesNLP
 import rx.Rx.Dynamic
 import rx.opmacros.Utils.Id
 
@@ -80,10 +80,10 @@ case class WebSocketTransport(channel: String, username: String) extends WebSock
   */
 
   protected def onInput(inp: Input) = inp match {
-    case Connected(uname, ch, list) if uname==username /*&& ch == channel*/ =>
+    case MessagesNLP.Connected(uname, ch, list) if uname==username /*&& ch == channel*/ =>
       println(s"connection of user $username to $channel established")
       connected() = true
-    case Disconnected(uname, ch, list) if uname==username /* && ch == channel */ =>
+    case MessagesNLP.Disconnected(uname, ch, list) if uname==username /* && ch == channel */ =>
       println(s"user $username diconnected from $channel")
       connected() = false
 

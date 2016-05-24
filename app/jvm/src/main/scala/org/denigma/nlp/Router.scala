@@ -2,13 +2,15 @@ package org.denigma.nlp
 
 import java.io.{File => JFile}
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.extensions.security.LoginInfo
 import akka.http.extensions.stubs.{Registration, _}
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.stream.Materializer
 import better.files.File
+import com.typesafe.config.Config
 import org.denigma.nlp.communication.WebSocketManager
+import org.denigma.nlp.extractions.ExtractorWorker
 import org.denigma.nlp.pages.{Head, Pages, WebSockets}
 
 class Router(files: File)(implicit fm: Materializer, system: ActorSystem) extends Directives {
@@ -21,7 +23,11 @@ class Router(files: File)(implicit fm: Materializer, system: ActorSystem) extend
 
   loginController.addUser(LoginInfo("admin", "test2test", "test@email"))
 
-  val transport = new WebSocketManager(system)
+  val config: Config = system.settings.config
+
+  val extractor: ActorRef = system.actorOf(Props(classOf[ExtractorWorker], config)/*.withDispatcher("reach-dispatcher")*/) //dedicated thread per NLP
+
+  val transport = new WebSocketManager(system, extractor = extractor)
 
   def loadFiles: Route = pathPrefix("files" ~ Slash) {
     getFromDirectory(files.path.toString)

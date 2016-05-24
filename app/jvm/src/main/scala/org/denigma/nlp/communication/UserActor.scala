@@ -14,8 +14,8 @@ import akka.stream.actor.{ActorPublisher, ActorPublisherMessage}
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.util.ByteString
 import boopickle.DefaultBasic._
-import org.denigma.nlp.MessagesNLP
 import org.denigma.nlp.communication.SocketMessages.OutgoingMessage
+import org.denigma.nlp.messages.MessagesNLP
 
 import scala.annotation.tailrec
 import scala.collection.immutable.SortedSet
@@ -26,26 +26,29 @@ import scala.util.{Failure, Success}
 class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
 
-  println("USER ACTOR STARTS!")
-
   protected def onTextMessage: Receive = {
     case SocketMessages.IncomingMessage(channel, uname, TextMessage.Strict(text), time) =>
   }
 
   protected def annotationMessages: Receive  = {
-    case MessagesNLP.Annotate(text) =>
+    case a @ MessagesNLP.Annotate(text) =>
+      println("ANNOTATION GOES TO USER with text = "+text)
+      nlp ! a
   }
 
   protected def otherMessages: Receive  = {
     case other => log.error(s"unexpected $other")
   }
 
+  def onMessageNLP = {
+    println("MESSAGE RECEIVED")
+    annotationMessages.orElse(otherMessages)
+  }
 
   protected def onBinaryMessage: Receive = {
     case SocketMessages.IncomingMessage(channel, uname, message: BinaryMessage.Strict, time) =>
       val mes = Unpickle[MessagesNLP.Message].fromBytes(message.data.toByteBuffer)
-      val fun = annotationMessages.orElse(otherMessages)
-      fun(mes)
+      onMessageNLP(mes)
     //log.error(s"something binary received on $channel by $username")
   }
 
