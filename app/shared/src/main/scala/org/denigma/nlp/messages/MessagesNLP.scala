@@ -13,10 +13,21 @@ object MessagesNLP {
         .addConcreteType[Disconnected]
         .addConcreteType[Annotate]
         .addConcreteType[NLPReady]
+        //.addConcreteType[DocumentAnnotations]
 
   }
 
   trait Message
+
+
+  object DocumentAnnotations {
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[DocumentAnnotations] = PicklerGenerator.generatePickler[DocumentAnnotations]
+  }
+
+
+  case class DocumentAnnotations(document: Annotations.Document, mentions: List[Annotations.Mention]) extends Message
 
   case class ServerErrors(errors: List[String]) extends Message
 

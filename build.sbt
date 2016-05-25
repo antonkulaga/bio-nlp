@@ -93,7 +93,7 @@ lazy val app = crossProject
     (fullClasspath in Runtime) += (packageBin in Assets).value, //to package production deps
     libraryDependencies += "com.lihaoyi" %% "ammonite-ops" % Versions.ammonite,
     libraryDependencies += "com.lihaoyi" %% "ammonite-shell" % Versions.ammonite,
-    libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite % Test cross CrossVersion.full,
+    libraryDependencies += "com.lihaoyi" % "ammonite-repl_2.11.8" % Versions.ammonite % Test,
     dependencyOverrides += "org.biopax.paxtools" % "paxtools-core" % Versions.paxtools,
     initialCommands in (Test, console) := Console.out
   )

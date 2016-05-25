@@ -6,9 +6,7 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage}
 import akka.stream.actor.ActorPublisherMessage
 import boopickle.DefaultBasic._
-import org.denigma.nlp.messages.MessagesNLP
-
-import scala.concurrent.duration._
+import org.denigma.nlp.messages._
 
 class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
@@ -56,6 +54,12 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
 
     case MessagesNLP.Disconnected(user, channel, list) =>
       log.info(s"User $user disconnected from channel $channel")
+
+    case  result @ MessagesNLP.DocumentAnnotations(document, mens) =>
+      println("let us send annotations to the client!")
+      val d = Pickle.intoBytes[MessagesNLP.Message](result)
+      send(d)
+
 
   }
 
