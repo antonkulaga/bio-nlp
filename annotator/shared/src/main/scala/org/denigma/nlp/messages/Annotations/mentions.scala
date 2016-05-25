@@ -5,13 +5,9 @@ import boopickle.CompositePickler
 object Mention {
   import boopickle.DefaultBasic._
   implicit val mentionPickler: CompositePickler[Mention] = compositePickler[Mention]
-    .addConcreteType[CorefTextBoundMention]
-    .addConcreteType[SimpleTextBoundMention]
-    .join(TextBoundMention.pickler)
-    /*
     .addConcreteType[CorefEventMention]
     .addConcreteType[CorefRelationMention]
-    */
+    .join(TextBoundMention.pickler)
 
 }
 

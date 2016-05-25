@@ -9,7 +9,7 @@ import akka.http.scaladsl.testkit.WSProbe
 import akka.stream.testkit.TestSubscriber
 import akka.util.ByteString
 import boopickle.DefaultBasic._
-import org.denigma.nlp.messages.MessagesNLP
+import messages.MessagesNLP
 
 import scala.annotation.tailrec
 import scala.concurrent.duration._

@@ -1,9 +1,9 @@
-package org.denigma.nlp.brat
+package org.denigma.brat
 
 import scala.scalajs.js
 import scala.scalajs.js.Array
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
-import scalajs.js.JSConverters._
 
 @JSName("Util")
 @js.native

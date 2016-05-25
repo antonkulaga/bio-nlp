@@ -54,6 +54,41 @@ def scalaJSDevTaskStage: Def.Initialize[Task[Pipeline.Stage]] = Def.task { mappi
   mappings ++ PlayScalaJS.devFiles(Compile).value ++ PlayScalaJS.sourcemapScalaFiles(fastOptJS).value
 }
 
+lazy val brat = (project in file("brat"))
+  .settings(commonSettings ++ publishSettings: _*)
+  .settings(
+    name := "brat-facade",
+    version := Versions.bratFacade,
+    scalaVersion := Versions.scala,
+    libraryDependencies ++= Seq(
+    "org.scala-js" %%% "scalajs-dom" % "0.9.0"
+  )
+).enablePlugins(ScalaJSPlugin, ScalaJSPlay)
+
+lazy val annotator = crossProject
+  .crossType(CrossType.Full)
+  .in(file("annotator"))
+  .settings(commonSettings ++ publishSettings: _*)
+  .settings(
+    name := "annotator",
+    version := Versions.bioNLP
+  ).disablePlugins(RevolverPlugin)
+  .jsSettings(
+    libraryDependencies ++= Dependencies.sjsLibs.value,
+    persistLauncher in Compile := true,
+    persistLauncher in Test := false,
+    jsDependencies += RuntimeDOM % Test
+    //jsEnv in Test := new org.scalajs.jsenv.selenium.SeleniumJSEnv(org.scalajs.jsenv.selenium.Firefox)
+  )
+  .jsConfigure(p=>p.enablePlugins(ScalaJSPlay).dependsOn(brat))
+  .jvmSettings(
+    (emitSourceMaps in fullOptJS) := true,
+    dependencyOverrides += "org.biopax.paxtools" % "paxtools-core" % Versions.paxtools
+  )
+
+lazy val annotatorJS = annotator.js
+lazy val annotatorJVM = annotator.jvm
+
 lazy val app = crossProject
   .crossType(CrossType.Full)
   .in(file("app"))
@@ -61,7 +96,8 @@ lazy val app = crossProject
   .settings(
     name := "bio-nlp",
     version := Versions.bioNLP
-  ).disablePlugins(RevolverPlugin).
+  ).dependsOn(annotator)
+  .disablePlugins(RevolverPlugin).
     // adding the `it` configuration
     configs(IntegrationTest).
     // adding `it` tasks

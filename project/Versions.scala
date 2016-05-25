@@ -57,7 +57,7 @@ trait ScalaJSVersions {
 
 	val d3jsFacade = "0.3.1"
 
-
+	val bratFacade = "1.3-0.0.1"
 
 }
 
@@ -80,6 +80,8 @@ trait SharedVersions
 	val fastparse = "0.3.7"
 
 	val quicklens = "1.4.7"
+
+	val pprint =  "0.4.0"
 }
 
 

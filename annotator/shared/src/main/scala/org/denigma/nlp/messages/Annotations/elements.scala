@@ -5,6 +5,8 @@ object Document {
   import boopickle.DefaultBasic._
 
   implicit val pickler: Pickler[Document] = PicklerGenerator.generatePickler[Document]
+
+  lazy val empty = Document("", Nil, None)
 }
 case class Document( id: String = "",
                      sentences: List[Sentence],

@@ -1,57 +1,19 @@
-package org.denigma.nlp
+package org.denigma.nlp.communication
 
-import org.denigma.controls.sockets.WebSocketTransport1
-import org.scalajs.dom
-import org.denigma.nlp.messages.MessagesNLP
-import rx._
-import org.denigma.binding.extensions._
 import java.nio.ByteBuffer
 
 import boopickle.DefaultBasic._
-
-import scalajs.concurrent.JSExecutionContext.Implicits.queue
-import org.denigma.controls.sockets._
+import org.denigma.nlp.messages.MessagesNLP
+import org.denigma.binding.extensions._
+import org.denigma.controls.sockets.{WebSocketTransport1, _}
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebSocket
 import rx.Ctx.Owner.Unsafe.Unsafe
-import rx.{Rx, Var}
-import org.denigma.binding.extensions._
-import org.denigma.nlp.messages.MessagesNLP
-import rx.Rx.Dynamic
-import rx.opmacros.Utils.Id
+import rx.Var
 
-import scala.concurrent.{Future, Promise}
-import scala.concurrent.duration._
 
-class Collecter[Input, Output]
-  (input: Rx[Input])
-  (collect: PartialFunction[Input, Output])
-  (until: PartialFunction[Input, Boolean])
-  {
-  protected val promise = Promise[List[Output]]
 
-  val collection: Rx[List[Output]] = input.fold(List.empty[Output]){
-    case (acc, el)=>
-      if(collect.isDefinedAt(el)) collect(el)::acc else acc
-  }
-
-  val inputObservable = input.triggerLater {
-    val mes = input.now
-    if (until.isDefinedAt(mes) && until(mes)) {
-      val result = collection.now.reverse
-      collection.kill()
-      promise.success(result)
-    }
-  }
-
-  lazy val future = promise.future
-  future.onComplete{
-    case _ =>
-      inputObservable.kill()
-  }
-}
-
-case class WebSocketTransport(channel: String, username: String) extends WebSocketTransport1
+case class WebSocketNLPTransport(channel: String, username: String) extends WebSocketTransport1
 {
 
   type Input = MessagesNLP.Message
@@ -70,7 +32,7 @@ case class WebSocketTransport(channel: String, username: String) extends WebSock
   }
 
   def collect[Output](partialFunction: PartialFunction[Input, Output])(until: PartialFunction[Input, Boolean]) = {
-    new Collecter[Input, Output](input)(partialFunction)(until).future
+    new MessageCollecter[Input, Output](input)(partialFunction)(until).future
   }
 
 

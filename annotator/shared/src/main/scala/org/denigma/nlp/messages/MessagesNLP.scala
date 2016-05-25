@@ -6,14 +6,14 @@ object MessagesNLP {
 
   object Message {
 
-    import boopickle.Default._
+    import boopickle.DefaultBasic._
     implicit val simpleMessagePickler: CompositePickler[Message] = compositePickler[Message]
         .addConcreteType[ServerErrors]
         .addConcreteType[Connected]
         .addConcreteType[Disconnected]
         .addConcreteType[Annotate]
         .addConcreteType[NLPReady]
-        //.addConcreteType[DocumentAnnotations]
+        .addConcreteType[DocumentAnnotations]
 
   }
 
@@ -24,22 +24,61 @@ object MessagesNLP {
     import boopickle.DefaultBasic._
 
     implicit val pickler: Pickler[DocumentAnnotations] = PicklerGenerator.generatePickler[DocumentAnnotations]
+
+    lazy val empty: DocumentAnnotations = DocumentAnnotations(Annotations.Document.empty, Nil)
   }
 
 
   case class DocumentAnnotations(document: Annotations.Document, mentions: List[Annotations.Mention]) extends Message
 
+  object ServerErrors{
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[ServerErrors] = PicklerGenerator.generatePickler[ServerErrors]
+  }
+
   case class ServerErrors(errors: List[String]) extends Message
+
+  object Connected{
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[Connected] = PicklerGenerator.generatePickler[Connected]
+  }
+
 
   case class Connected(username: String, channel: String, users: List[String]) extends Message
 
+  object Disconnected{
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[Disconnected] = PicklerGenerator.generatePickler[Disconnected]
+  }
+
   case class Disconnected(username: String, channel: String, users: List[String]) extends Message
+
+
+  object Annotate{
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[Annotate] = PicklerGenerator.generatePickler[Annotate]
+  }
+
 
   case class Annotate(text: String) extends Message
 
+  object NLPReady{
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[NLPReady] = PicklerGenerator.generatePickler[NLPReady]
+  }
+
   case class NLPReady(username: String) extends Message
 
-  case object Empty extends Message
+  case object Empty extends Message {
+    import boopickle.DefaultBasic._
+
+    implicit val pickler: Pickler[this.type] = PicklerGenerator.generatePickler[this.type]
+  }
 /* case class Annotation(displaLabel: String,
                         arguments: Map[String, String],
                         modifications: Set[Modification],

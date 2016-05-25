@@ -74,7 +74,9 @@ object Dependencies {
 
 		"io.circe" %%% "circe-parser" % Versions.circe,
 
-		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens
+		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens,
+
+		"com.lihaoyi" %%% "pprint" % Versions.pprint
 	))
 
 	val otherJvm = Def.setting(Seq(
