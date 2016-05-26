@@ -6,24 +6,30 @@ object Document {
 
   implicit val pickler: Pickler[Document] = PicklerGenerator.generatePickler[Document]
 
-  lazy val empty = Document("", Vector.empty, None)
+  lazy val empty = Document("", Vector.empty, "")
 }
 case class Document( id: String = "",
                      sentences: Vector[Sentence],
                      //coreferenceChains:Option[CorefChains],
                      //discourseTree: Option[DiscourseTree],
-                     text: Option[String]) {
+                     text: String) {
 
   def hasId = id != ""
 
-  lazy val fullText: String = sentences.foldLeft(""){
-    case (acc, s)=> acc+s.text+"\n"
-  }.trim
-
-  def position(mention: Mention): (Int, Int) = {
+  /*
+  lazy val fullText: String = text.getOrElse{ sentences.foldLeft(""){
+    case (acc, s)=> acc+s.text
+  }.trim }
+*/
+  def absolutePosition(mention: Mention): Interval = {
     require(mention.sentenceNum < sentences.length, "mention should refer to a sentence that exists")
-    val (offset, sentence) = sentencesOffsets(mention.sentenceNum)
-    (mention.start + offset, mention.end + offset)
+    val offsets = sentencesOffsets
+    offsets.get(mention.sentenceNum).map {
+      case (offset, sentence) =>
+        mention.span + offset
+    }.getOrElse{
+      mention.span
+    }
   }
 
   lazy val sentencesOffsets: Map[Int, (Int, Sentence)] = sentences.zipWithIndex.foldLeft(List.empty[(Int, (Int, Sentence))]){
@@ -62,6 +68,8 @@ object Interval {
 
 case class Interval (start: Int, end: Int) {
   def isEmpty: Boolean = this == Interval.empty
+
+  def +(offset: Int) = Interval(start + offset, end + offset)
 }
 
 

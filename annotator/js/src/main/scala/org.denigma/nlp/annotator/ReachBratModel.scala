@@ -132,44 +132,32 @@ class ReachBratModel {
   }
 
   protected def eventMention(doc: Annotations.Document, mention: Annotations.CorefEventMention, id: String, mentions: Map[Annotations.Mention, String]): BratEvent = {
-
     val trig = mentions.getOrElse(mention.trigger, {
       dom.console.error("cannot find mention for trigger " + mention.trigger)
       ""
     })
-    println("event = ")
-    pprint.pprintln(mention)
-    /*
-    val arguments = mention.arguments.flatMap{
-      case (label, ms) =>
-        ms.map( m=> label -> mention(m))
-    }
-    */
     BratEvent(id, trig, Nil)
   }
 
   protected def entityMention(doc: Annotations.Document, mention: Annotations.Mention, id: String, mentions: Map[Annotations.Mention, String]): Entity = {
-    val pos = doc.position(mention)
-    val ent = Entity(id, mention.label, List(pos))
+    val pos = mention.span//doc.position(mention)
+    val ent = Entity(id, mention.label, List(pos.start -> pos.end))
     ent
   }
 
   def docData(doc: Annotations.Document, mentions: Map[Annotations.Mention, String] ): DocData =  {
     val (entities: List[Entity], events: List[BratEvent]) = mentions.foldLeft((List.empty[Entity], List.empty[BratEvent])){
-      case ((ents, evs), (mention: Annotations.CorefEventMention, id)) => (ents, eventMention(doc, mention, id, mentions)::evs)
-      case ((ents, evs), (mention, id)) =>(entityMention(doc, mention, id, mentions)::ents, evs)
+      case ((ents, evs), (mention: Annotations.CorefEventMention, id)) =>
+        (ents, eventMention(doc, mention, id, mentions)::evs)
+      case ((ents, evs), (mention, id)) =>
+        (entityMention(doc, mention, id, mentions)::ents, evs)
     }
-    /*
-    val els = mentions.map{
-      case (mention: Annotations.CorefEventMention, id)=> eventMention(mention, mentions)
-      case (mention, id) =>
-        val pos = doc.position(mention)
-        val ent = Entity(id, mention.label, List(pos))
-        ent
-
-    }.toList
-    */
-    DocData(doc.fullText, entities = entities.reverse, events = events.reverse)
+    println("++++++++++++++++++++++++++++++++++++")
+    pprint.pprintln(entities)
+    println("####################################")
+    pprint.pprintln(events)
+    println("====================================")
+    DocData(doc.text, entities = entities.reverse, events = Nil)
   }
 
   lazy val colData: ColData = bioColData()

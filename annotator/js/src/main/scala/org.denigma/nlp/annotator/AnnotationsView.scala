@@ -31,7 +31,9 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
       "context:"+mention.context+"<br>"+
       "arguments: "+mention.arguments+"<br>"+
       "modifications: "+mention.modifications+"<br>"+
-      "triggered by: "+mention.trigger+"<br>"
+      "triggered by: "+mention.trigger+"<br>"+
+      "intervals: "+mention.tokenInterval+"<br>"
+
 
     case mention :Annotations.BioMention =>
       "labels: "+mention.labels+"<br>"+
@@ -39,14 +41,16 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
       "ground:"+mention.bestPick.getOrElse("")+"<br>"+
       "context:"+mention.context+"<br>"+
       "arguments: "+mention.arguments+"<br>"+
-      "modifications: "+mention.modifications+"<br>"
+      "modifications: "+mention.modifications+"<br>"+
+      "intervals: "+mention.tokenInterval+"<br>"
 
 
 
     case mention =>
       "labels: "+mention.labels+"<br>"+
       "foundby: "+mention.foundBy+"<br>"+
-      "arguments: "+mention.arguments+"<br>"
+      "arguments: "+mention.arguments+"<br>"+
+      "intervals: "+mention.tokenInterval+"<br>"
 
 
 

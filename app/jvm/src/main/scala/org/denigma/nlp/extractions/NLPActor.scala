@@ -5,6 +5,8 @@ import java.nio.ByteBuffer
 import akka.actor.{Actor, ActorLogging}
 import better.files.File
 import com.typesafe.config.Config
+import edu.arizona.sista.processors.Document
+import edu.arizona.sista.reach.mentions.BioMention
 import net.ceedubs.ficus.Ficus._
 import org.denigma.nlp.communication.WorkMessages
 import org.denigma.nlp.messages._
@@ -35,11 +37,11 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
   protected def annotate(text: String) = {
 
-    val (doc, mentions) = extractor.annotate(text)
+    val (doc: Document, mentions: Seq[BioMention]) = extractor.annotate(text)
     val sentences: Vector[Annotations.Sentence] = doc.sentences.map(converter.sentence2annotation).toVector
-
-    val document = Annotations.Document(doc.id.getOrElse(""), sentences, doc.text)
-    val mens = mentions.map(m=>converter.convert(m)).toList
+    val txt = doc.text.getOrElse(text)
+    val document = Annotations.Document(doc.id.getOrElse(""), sentences, if(txt=="") text else txt)
+    val mens: List[Annotations.Mention] = converter.convert(mentions)
     val message = MessagesNLP.DocumentAnnotations(document, mens)
     save(message)
     sender ! message

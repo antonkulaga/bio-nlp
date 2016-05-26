@@ -33,8 +33,15 @@ object MessagesNLP {
 
 
   case class DocumentAnnotations(document: Annotations.Document, mentions: List[Annotations.Mention]) extends Message {
-    lazy val mentionById: Map[String, Mention] = mentions.map(m=> UUID.randomUUID().toString -> m).toMap
-    lazy val ids: Map[Mention, String] = mentionById.map{case (key, value)=> value -> key}
+
+    lazy val mentionsWithIDs: Map[Mention, String] = mentions.flatMap{
+      case m: Annotations.CorefEventMention=>
+        List(m -> UUID.randomUUID().toString, m.trigger -> UUID.randomUUID().toString) ++ m.arguments.values.flatMap(s=>s.map(mm=> m ->UUID.randomUUID().toString ))
+
+      case m=>
+        List(m -> UUID.randomUUID().toString) ++ m.arguments.values.flatMap(s=>s.map(mm=> m ->UUID.randomUUID().toString ))
+
+    }.toMap
   }
 
   object ServerErrors{

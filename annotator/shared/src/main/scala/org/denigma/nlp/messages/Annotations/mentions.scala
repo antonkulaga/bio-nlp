@@ -26,12 +26,11 @@ case class CorefEventMention(
                               context: Map[String, Seq[String]],
                               trigger: TextBoundMention,
                               isDirect: Boolean = false,
-                              detMap: Map[String, Int] = Map.empty,
-                              headMap: Map[String, Int] = Map.empty,
                               grounding: Option[KBResolution] = None,
                               candidates: List[KBResolution] = List.empty,
                               tokenInterval: Interval,
-                              sentenceNum: Int = 0
+                              sentence: Sentence,
+                              sentenceNum: Int
                             ) extends BioMention with TextBoundMention with Anaphoric
 
 
@@ -47,9 +46,9 @@ case class SimpleTextBoundMention (
                                     labels: List[String],
                                     foundBy: String,
                                     arguments: Map[String, Seq[Mention]],
-                                    headMap: Map[String, Int] = Map.empty,
                                     tokenInterval: Interval,
-                                    sentenceNum: Int = 0
+                                    sentence: Sentence,
+                                    sentenceNum: Int
                                   ) extends TextBoundMention
 
 
@@ -66,12 +65,11 @@ case class CorefRelationMention(  label: String, //
                                   arguments: Map[String, Seq[Mention]],
                                   modifications: Set[Modification],
                                   context: Map[String, Seq[String]],
-                                  detMap: Map[String, Int] = Map.empty,
-                                  headMap: Map[String, Int] = Map.empty,
                                   grounding: Option[KBResolution] = None,
                                   candidates: List[KBResolution] = List.empty,
                                   tokenInterval: Interval,
-                                  sentenceNum: Int = 0
+                                  sentence: Sentence,
+                                  sentenceNum: Int
                                ) extends  BioMention
 
 
@@ -87,12 +85,11 @@ case class CorefTextBoundMention(
                                   arguments: Map[String, Seq[Mention]],
                                   modifications: Set[Modification],
                                   context: Map[String, Seq[String]],
-                                  detMap: Map[String, Int] = Map.empty,
-                                  headMap: Map[String, Int] = Map.empty,
                                   grounding: Option[KBResolution] = None,
                                   candidates: List[KBResolution] = List.empty,
                                   tokenInterval: Interval,
-                                  sentenceNum: Int = 0
+                                  sentence: Sentence,
+                                  sentenceNum: Int
                                 ) extends TextBoundMention with BioMention
 
 
@@ -105,6 +102,8 @@ case class CorefTextBoundMention(
     def tokenInterval: Interval
     def sentenceNum: Int
     def modifications: Set[Modification]
+
+
   }
 
   object TextBoundMention {
@@ -127,6 +126,8 @@ case class CorefTextBoundMention(
 
     def foundBy: String
 
+    def sentence: Sentence
+
     /** index of the first token in the mention */
     def start: Int = tokenInterval.start
 
@@ -139,12 +140,16 @@ case class CorefTextBoundMention(
     /** returns true if the string matches any of the mention labels */
     def matches(label: String): Boolean = labels contains label
 
+    val span: Interval = Interval(sentence.startOffsets(start), sentence.endOffsets(Math.max(start, end-1)))
+
   }
 
   trait Anaphoric{
     self: Mention=>
+    /*
     def detMap: Map[String, Int]
     def headMap: Map[String, Int]
+    */
   }
 
 

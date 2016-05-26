@@ -33,13 +33,10 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
 
   val message = Var("")
 
-
-
   val ready = connector.NLPready
 
   val send: Var[MouseEvent] = Var(Events.createMouseEvent())
   send.triggerLater{
-    println("let is send something!")
       val mess = MessagesNLP.Annotate(text.now)
       connector.send(mess)
     }
@@ -60,7 +57,7 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
     bratManager.update(testBratModel.colData, testBratModel.docData)
     annotations.onChange{
       case message @ MessagesNLP.DocumentAnnotations(doc, ans) =>
-        val docData = reachBratModel.docData(doc, message.ids)
+        val docData = reachBratModel.docData(doc, message.mentionsWithIDs)
         bratManager.update(reachBratModel.colData, docData)
     }
   }

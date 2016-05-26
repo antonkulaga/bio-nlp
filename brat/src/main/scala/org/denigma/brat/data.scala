@@ -94,8 +94,6 @@ class ColData(types: List[EntityType], relationTypes: List[RelationType] = Nil, 
 
   val event_types = events.toJSArray
 
-  println(js.JSON.stringify(event_types))
-
 }
 
 @ScalaJSDefined
@@ -168,7 +166,6 @@ class DocData(val text: String,
   val relations = rels.map(r=>r.toJSArray).toJSArray
 
   val events: Array[Array[Object]] = evs.map(ev=>ev.toJSArray).toJSArray
-  println(js.JSON.stringify(events))
 
   val triggers: Array[Array[Object]] = trigs.map(p=>p.toJSArray).toJSArray
 
