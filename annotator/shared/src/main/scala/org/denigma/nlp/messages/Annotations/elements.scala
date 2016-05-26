@@ -6,15 +6,32 @@ object Document {
 
   implicit val pickler: Pickler[Document] = PicklerGenerator.generatePickler[Document]
 
-  lazy val empty = Document("", Nil, None)
+  lazy val empty = Document("", Vector.empty, None)
 }
 case class Document( id: String = "",
-                     sentences: List[Sentence],
+                     sentences: Vector[Sentence],
                      //coreferenceChains:Option[CorefChains],
                      //discourseTree: Option[DiscourseTree],
                      text: Option[String]) {
 
   def hasId = id != ""
+
+  lazy val fullText: String = sentences.foldLeft(""){
+    case (acc, s)=> acc+s.text+"\n"
+  }.trim
+
+  def position(mention: Mention): (Int, Int) = {
+    require(mention.sentenceNum < sentences.length, "mention should refer to a sentence that exists")
+    val (offset, sentence) = sentencesOffsets(mention.sentenceNum)
+    (mention.start + offset, mention.end + offset)
+  }
+
+  lazy val sentencesOffsets: Map[Int, (Int, Sentence)] = sentences.zipWithIndex.foldLeft(List.empty[(Int, (Int, Sentence))]){
+    case (Nil, (sentence, index) ) => (index -> (0 -> sentence))::Nil
+    case ( (prev , (prevOffset , previous))::before, (sentence, index)) =>
+      val offset = prevOffset + previous.text.length + 1
+      (index -> (offset -> sentence))::(prev , (prevOffset , previous))::before
+  }.reverse.toMap
 }
 
 object KBEntry {
@@ -77,7 +94,30 @@ case class Sentence(
                        /** DAG of syntactic and semantic dependencies; word offsets start at 0 */
                      //  var dependenciesByType:DependencyMap
                      */
-                   )
+                   ) {
+  lazy val text:String =  getSentenceFragmentText(0, words.length)
+
+  def getSentenceFragmentText(start:Int, end:Int):String = {
+    // optimize the single token case
+    if(end - start == 1) words(start)
+
+    val text = new scala.collection.mutable.StringBuilder()
+    for(i <- start until end) {
+      if(i > start) {
+        // add as many white spaces as recorded between tokens
+        // sometimes this space is negative: in BioNLPProcessor we replace "/" with "and"
+        //   in these cases, let's make sure we print 1 space, otherwise the text is hard to read
+        val numberOfSpaces = math.max(1, startOffsets(i) - endOffsets(i - 1))
+        for (j <- 0 until numberOfSpaces) {
+          text.append(" ")
+        }
+      }
+      text.append(words(i))
+    }
+    text.toString()
+  }
+
+}
 
 case class DiscourseTree (
                            /** Label of this tree, if non-terminal */

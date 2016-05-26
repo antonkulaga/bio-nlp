@@ -7,7 +7,6 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage}
 import akka.stream.actor.ActorPublisherMessage
 import boopickle.DefaultBasic._
 import org.denigma.nlp.messages._
-import pprint.Config.Colors._
 
 class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
@@ -58,8 +57,6 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
 
     case  result @ MessagesNLP.DocumentAnnotations(document, mens) =>
       val d = Pickle.intoBytes[MessagesNLP.Message](result)
-      pprint.pprintln("annotation are: ")
-      result.mentions.foreach(men=>pprint.pprintln(men))
       send(d)
 
 

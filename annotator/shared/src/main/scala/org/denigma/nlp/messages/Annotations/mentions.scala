@@ -30,7 +30,7 @@ case class CorefEventMention(
                               headMap: Map[String, Int] = Map.empty,
                               grounding: Option[KBResolution] = None,
                               candidates: List[KBResolution] = List.empty,
-                              tokenInterval: Interval = Interval.empty,
+                              tokenInterval: Interval,
                               sentenceNum: Int = 0
                             ) extends BioMention with TextBoundMention with Anaphoric
 
@@ -48,7 +48,7 @@ case class SimpleTextBoundMention (
                                     foundBy: String,
                                     arguments: Map[String, Seq[Mention]],
                                     headMap: Map[String, Int] = Map.empty,
-                                    tokenInterval: Interval = Interval.empty,
+                                    tokenInterval: Interval,
                                     sentenceNum: Int = 0
                                   ) extends TextBoundMention
 
@@ -70,7 +70,7 @@ case class CorefRelationMention(  label: String, //
                                   headMap: Map[String, Int] = Map.empty,
                                   grounding: Option[KBResolution] = None,
                                   candidates: List[KBResolution] = List.empty,
-                                  tokenInterval: Interval = Interval.empty,
+                                  tokenInterval: Interval,
                                   sentenceNum: Int = 0
                                ) extends  BioMention
 
@@ -91,7 +91,7 @@ case class CorefTextBoundMention(
                                   headMap: Map[String, Int] = Map.empty,
                                   grounding: Option[KBResolution] = None,
                                   candidates: List[KBResolution] = List.empty,
-                                  tokenInterval: Interval = Interval.empty,
+                                  tokenInterval: Interval,
                                   sentenceNum: Int = 0
                                 ) extends TextBoundMention with BioMention
 

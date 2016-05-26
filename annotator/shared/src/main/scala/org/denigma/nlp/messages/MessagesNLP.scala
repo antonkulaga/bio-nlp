@@ -1,6 +1,9 @@
 package org.denigma.nlp.messages
 
+import java.util.UUID
+
 import boopickle.CompositePickler
+import org.denigma.nlp.messages.Annotations.Mention
 
 object MessagesNLP {
 
@@ -29,7 +32,10 @@ object MessagesNLP {
   }
 
 
-  case class DocumentAnnotations(document: Annotations.Document, mentions: List[Annotations.Mention]) extends Message
+  case class DocumentAnnotations(document: Annotations.Document, mentions: List[Annotations.Mention]) extends Message {
+    lazy val mentionById: Map[String, Mention] = mentions.map(m=> UUID.randomUUID().toString -> m).toMap
+    lazy val ids: Map[Mention, String] = mentionById.map{case (key, value)=> value -> key}
+  }
 
   object ServerErrors{
     import boopickle.DefaultBasic._

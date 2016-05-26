@@ -19,7 +19,7 @@ class Router(files: File)(implicit fm: Materializer, system: ActorSystem) extend
 
   lazy val config: Config = system.settings.config
 
-  val extractor: ActorRef = system.actorOf(Props(classOf[NLPActor], config)/*.withDispatcher("reach-dispatcher")*/) //dedicated thread per NLP
+  val extractor: ActorRef = system.actorOf(Props(classOf[NLPActor], config, files)/*.withDispatcher("reach-dispatcher")*/) //dedicated thread per NLP
 
   val sessionController: SessionController = new InMemorySessionController
 

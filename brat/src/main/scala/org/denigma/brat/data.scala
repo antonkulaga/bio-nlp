@@ -3,13 +3,11 @@ package org.denigma.brat
 import scala.scalajs.js
 import scala.scalajs.js.Array
 import scala.scalajs.js.JSConverters._
-import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
+import scala.scalajs.js.annotation.ScalaJSDefined
 
-@JSName("Util")
-@js.native
-object BratUtil  extends js.Object {
-
-  def embed(id: String = "annotation", collData: ColData, docData: DocData,  webFontURLs: js.Array[String]): Unit = js.native
+object  RelationRole
+{
+  def apply(role: String, ts: List[String]): RelationRole = new RelationRole(role, ts)
 }
 
 @ScalaJSDefined
@@ -33,6 +31,12 @@ collData['event_types'] = [ {
 } ];
  */
 
+object RelationType
+{
+  def apply(`type`: String, lbs: List[String], dashArray: String = "3,3", color: String = "purple", roles: List[RelationRole] = Nil) =
+    new RelationType(`type`, lbs, dashArray, color, roles)
+}
+
 @ScalaJSDefined
 class RelationType(val `type`: String, lbs: List[String], val dashArray: String = "3,3", val color: String = "purple", roles: List[RelationRole]) extends js.Object {
 
@@ -41,15 +45,26 @@ class RelationType(val `type`: String, lbs: List[String], val dashArray: String 
   val args = roles.toJSArray
 
 }
+object LabeledType
+{
+  def apply(`type`: String, lbs: List[String], color: String = ""): LabeledType = {
+    new LabeledType(`type`, lbs, color)
+  }
+}
+
 @ScalaJSDefined
 class LabeledType(val `type`: String, lbs: List[String], val color: String = "") extends js.Object {
 
   val labels = lbs.toJSArray
 }
-
+object EventType {
+  def apply(`type`: String, lbs: List[String], types: List[LabeledType], bgColor: String = "lightgreen", borderColor: String = "darken") = {
+    new EventType(`type`, lbs, types, bgColor, borderColor)
+  }
+}
 
 @ScalaJSDefined
-class EventType(val `type`: String, lbs: List[String], val bgColor: String = "lightgreen", borderColor: String = "darken", types: List[LabeledType]) extends js.Object {
+class EventType(val `type`: String, lbs: List[String], types: List[LabeledType], val bgColor: String = "lightgreen", borderColor: String = "darken") extends js.Object {
   val labels: Array[String] = lbs.toJSArray
   val arcs = types.toJSArray
 /*
@@ -61,8 +76,14 @@ class EventType(val `type`: String, lbs: List[String], val bgColor: String = "li
  */
 }
 
+object ColData {
+  def apply(types: List[EntityType], relationTypes: List[RelationType] = Nil, attributes: List[EntityAttributeType] = Nil, events: List[EventType]) = {
+    new ColData(types, relationTypes, attributes, events)
+  }
+}
+
 @ScalaJSDefined
-class ColData(types: List[EntityType], relationTypes: List[RelationType] = Nil, attributes: List[EntityAttributeType] = Nil, events: List[EventType]) extends js.Object
+class ColData(types: List[EntityType], relationTypes: List[RelationType] = Nil, attributes: List[EntityAttributeType] = Nil, events: List[EventType] = Nil) extends js.Object
 {
 
   val entity_types: js.Array[EntityType] =  types.toJSArray
@@ -124,6 +145,12 @@ case class BratEvent(id: String, trigger: String, args: List[(String, String)]) 
   lazy val toJSArray = js.Array(id, trigger, arguments)
 }
 
+object DocData {
+  def apply(text: String, elements: List[Entity], attribs: List[DocAttribute] = Nil, rels: List[Relation] = Nil, evs: List[BratEvent] = Nil, trigs: List[Entity] = Nil) = {
+    new DocData(text, elements, attribs, rels, evs, trigs)
+  }
+}
+
 @ScalaJSDefined
 class DocData(val text: String,
               elements: List[Entity],
@@ -143,6 +170,8 @@ class DocData(val text: String,
   println(js.JSON.stringify(events))
 
   val triggers: Array[Array[Object]] = trigs.map(p=>p.toJSArray).toJSArray
+
+  val collection = null //some weird thing
 
 
 }

@@ -99,7 +99,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       headMap = mention.headMap,
       grounding = gr,
       candidates = resolutions,
-      sentenceNum = mention.sentence
+      sentenceNum = mention.sentence,
+      tokenInterval = mention.tokenInterval
     )
   }
 
@@ -124,7 +125,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       headMap = mention.headMap,
       grounding = gr,
       candidates = resolutions,
-      sentenceNum = mention.sentence
+      sentenceNum = mention.sentence,
+      tokenInterval = mention.tokenInterval
     )
   }
 
@@ -135,7 +137,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       labels = mention.labels.toList,
       foundBy = mention.foundBy,
       arguments = mention.arguments,
-      sentenceNum = mention.sentence
+      sentenceNum = mention.sentence,
+      tokenInterval = mention.tokenInterval
     )
   }
 
@@ -161,7 +164,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       headMap = mention.headMap,
       candidates = resolutions,
       grounding = mention.grounding().map(resolution2annotationResolution),
-      sentenceNum = mention.sentence
+      sentenceNum = mention.sentence,
+      tokenInterval = mention.tokenInterval
     )
   }
 
