@@ -1,7 +1,7 @@
 package org.denigma.brat
 
 import scala.scalajs.js
-import scala.scalajs.js.Array
+import scala.scalajs.js.{Array, Dictionary}
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.ScalaJSDefined
 
@@ -123,9 +123,10 @@ case class DocAttribute(id: String, tp: String, target: String) {
 
 
 @ScalaJSDefined
-class EntityAttributeType(val `type`: String, valueStr: String) extends js.Object{
+class EntityAttributeType(val `type`: String, vals: Map[String, String]) extends js.Object{
 
-  val values = scalajs.js.JSON.parse(valueStr)
+  import scala.scalajs.js.JSConverters._
+  val values: Dictionary[String] = vals.toJSDictionary
 
 }
 /*
@@ -146,8 +147,8 @@ case class BratEvent(id: String, trigger: String, args: List[(String, String)]) 
 }
 
 object DocData {
-  def apply(text: String, elements: List[Entity], attribs: List[DocAttribute] = Nil, rels: List[Relation] = Nil, evs: List[BratEvent] = Nil, trigs: List[Entity] = Nil) = {
-    new DocData(text, elements, attribs, rels, evs, trigs)
+  def apply(text: String, entities: List[Entity], attribs: List[DocAttribute] = Nil, rels: List[Relation] = Nil, events: List[BratEvent] = Nil, trigs: List[Entity] = Nil) = {
+    new DocData(text, entities, attribs, rels, events, trigs)
   }
 }
 

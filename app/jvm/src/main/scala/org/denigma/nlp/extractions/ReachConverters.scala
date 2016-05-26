@@ -26,7 +26,7 @@ trait ReachElementsConverters {
   }
 
   protected implicit def interval2Annotation(interval: Interval): Annotations.Interval = {
-    Interval.empty
+    println(interval)
     Annotations.Interval(interval.start, interval.end)
   }
 
@@ -99,8 +99,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       headMap = mention.headMap,
       grounding = gr,
       candidates = resolutions,
-      sentenceNum = mention.sentence,
-      tokenInterval = mention.tokenInterval
+      tokenInterval = interval2Annotation(mention.tokenInterval),
+      sentenceNum = mention.sentence
     )
   }
 
@@ -118,15 +118,15 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       foundBy = mention.foundBy,
       arguments = mention.arguments,
       modifications = mods,
-      isDirect = mention.isDirect,
       context = cont,
       trigger = trig,
+      isDirect = mention.isDirect,
       detMap = mention.detMap,
       headMap = mention.headMap,
       grounding = gr,
       candidates = resolutions,
-      sentenceNum = mention.sentence,
-      tokenInterval = mention.tokenInterval
+      tokenInterval = interval2Annotation(mention.tokenInterval),
+      sentenceNum = mention.sentence
     )
   }
 
@@ -137,8 +137,8 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       labels = mention.labels.toList,
       foundBy = mention.foundBy,
       arguments = mention.arguments,
-      sentenceNum = mention.sentence,
-      tokenInterval = mention.tokenInterval
+      tokenInterval = interval2Annotation(mention.tokenInterval),
+      sentenceNum = mention.sentence
     )
   }
 
@@ -162,10 +162,10 @@ trait ReachMentionsConverters extends ReachElementsConverters{
       context = mention.context,
       detMap = mention.detMap,
       headMap = mention.headMap,
-      candidates = resolutions,
       grounding = mention.grounding().map(resolution2annotationResolution),
-      sentenceNum = mention.sentence,
-      tokenInterval = mention.tokenInterval
+      candidates = resolutions,
+      tokenInterval = interval2Annotation(mention.tokenInterval),
+      sentenceNum = mention.sentence
     )
   }
 

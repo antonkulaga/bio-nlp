@@ -19,7 +19,7 @@ class TestBratModel {
           new LabeledType("Perpetrator", List("Perpetrator", "Perp"))
         ), "lightgreen", "darken")
     )
-    val typeAttributes = List(new EntityAttributeType("Notorious", """{ "Notorious": { "glyph": "★" } }"""))
+    val typeAttributes = List(new EntityAttributeType("Notorious", Map("glyph"->"★")))
     new ColData(  types, relationTypes, typeAttributes, events)
   }
 
