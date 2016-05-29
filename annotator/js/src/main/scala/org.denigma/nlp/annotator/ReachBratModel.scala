@@ -3,6 +3,10 @@ import org.denigma.brat._
 import org.denigma.nlp.messages.Annotations
 import org.scalajs.dom
 
+import scalajs.js.JSConverters._
+import scala.scalajs.js
+import scala.scalajs.js.Array
+
 object ReachBratModel {
   def apply(): ReachBratModel = new ReachBratModel()
 }
@@ -128,7 +132,6 @@ class ReachBratModel {
     )
     val eventTypes = regulationTypes ++ geneExpressions ++conversions
     ColData(types, relationTypes = relations, attributes = attributes, events = eventTypes)
-
   }
 
   protected def eventMention(doc: Annotations.Document, mention: Annotations.CorefEventMention, id: String, mentions: Map[Annotations.Mention, String]): BratEvent = {
@@ -136,7 +139,15 @@ class ReachBratModel {
       dom.console.error("cannot find mention for trigger " + mention.trigger)
       ""
     })
-    BratEvent(id, trig, Nil)
+    val args = mention.arguments.flatMap{
+      case (key, vals) =>
+        vals.collect{
+          case v if mentions.contains(v) =>
+            key -> mentions(v)
+        }
+    }.toList
+    //println("ARGUMENTS ARE: "+args)
+    BratEvent(id, trig, args)
   }
 
   protected def entityMention(doc: Annotations.Document, mention: Annotations.Mention, id: String, mentions: Map[Annotations.Mention, String]): Entity = {
@@ -146,18 +157,53 @@ class ReachBratModel {
   }
 
   def docData(doc: Annotations.Document, mentions: Map[Annotations.Mention, String] ): DocData =  {
-    val (entities: List[Entity], events: List[BratEvent]) = mentions.foldLeft((List.empty[Entity], List.empty[BratEvent])){
-      case ((ents, evs), (mention: Annotations.CorefEventMention, id)) =>
-        (ents, eventMention(doc, mention, id, mentions)::evs)
-      case ((ents, evs), (mention, id)) =>
-        (entityMention(doc, mention, id, mentions)::ents, evs)
+    //val byIds = mentions.map{ case (key, value)=>(value, key)}
+    val (
+      entities: Map[String, Entity],
+      triggers: Map[String, Entity],
+      events: Map[String, BratEvent]
+      ) = mentions.foldLeft((
+      Map.empty[String, Entity],
+      Map.empty[String, Entity],
+      Map.empty[String, BratEvent])
+    ){
+
+      case ((ents, trigs, evs), (mention: Annotations.CorefEventMention, id)) if evs.contains(id) => (ents, trigs, evs)
+
+      case ((ents, trigs, evs), (mention: Annotations.CorefEventMention, id)) =>
+        val ev = eventMention(doc, mention, id, mentions)
+        if(trigs.contains(ev.trigger)) (ents, trigs, evs.updated(id, ev)) else
+        if(ents.contains(ev.trigger))(ents, trigs.updated(ev.trigger, ents(ev.trigger)), evs.updated(id, ev)) else
+        {
+          val tr = entityMention(doc, mention, ev.trigger, mentions)
+          (ents, trigs.updated(ev.trigger, tr), evs.updated(id, ev))
+        }
+
+      case ((ents, trigs, evs), (mention, id)) if trigs.contains(id) =>
+        //(ents.updated(id, trigs(id)), trigs, evs)
+        (ents, trigs, evs)
+
+      case ((ents, trigs, evs), (mention, id)) =>
+        val ent = entityMention(doc, mention, id, mentions)
+        (ents.updated(id, ent), trigs, evs)
+
     }
+    /*
     println("++++++++++++++++++++++++++++++++++++")
     pprint.pprintln(entities)
     println("####################################")
+    pprint.pprintln(triggers)
+    println("####################################")
     pprint.pprintln(events)
     println("====================================")
-    DocData(doc.text, entities = entities.reverse, events = Nil)
+    */
+    val (entList, trigList, eventList) = (entities.values.toList, triggers.values.toList, events.values.toList)
+
+    //val all: List[BratObject] = entList++trigList++eventList
+
+    val comments = mentions.map(m=>js.Array(m._2, m._1.foundBy,m._1.label)).toList
+
+    DocData(doc.text, entities = entList, trigs = trigList, events = eventList, comms = comments)
   }
 
   lazy val colData: ColData = bioColData()

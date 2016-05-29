@@ -30,8 +30,8 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
     case MessagesNLP.Annotate(text) =>
       println("annotation received with text = "+text)
-      annotate(text)
-      //cacheSend()
+      //annotate(text)
+      cacheSend()
 
   }
 

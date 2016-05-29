@@ -1,5 +1,7 @@
 package org.denigma.brat
 
+import org.scalajs.dom.raw.SVGElement
+
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
@@ -14,6 +16,7 @@ object BratUtil  extends js.Object {
 @js.native
 class BratVisualizer(dispatcher: BratDispatcher, container: String, webFontsURLs: js.Array[String]) extends js.Object {
 
+  val svg: SVGElement = js.native
 }
 
 @JSName("Dispatcher")
@@ -21,4 +24,19 @@ class BratVisualizer(dispatcher: BratDispatcher, container: String, webFontsURLs
 class BratDispatcher extends js.Object{
 
   def post[T](name: String, data: js.Array[T]): Unit = js.native
+}
+
+@JSName("AnnotatorUI")
+@js.native
+class AnnotatorUI(dispatcher: BratDispatcher, svg: SVGElement) extends js.Object
+{
+
+}
+
+
+@JSName("VisualizerUI")
+@js.native
+class VisualizerUI(dispatcher: BratDispatcher, svg: SVGElement) extends js.Object
+{
+
 }
