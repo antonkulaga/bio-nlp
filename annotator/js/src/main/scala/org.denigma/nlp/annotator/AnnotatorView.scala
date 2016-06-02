@@ -11,18 +11,15 @@ import org.scalajs.dom.{Element, MouseEvent}
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx._
 
+
 class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) extends BindableView {
 
   lazy val bratLocation = "/resources/brat"
-  lazy val webFontURLs =List(
+  lazy val webFontURLs = List(
     bratLocation + "/static/fonts/Astloch-Bold.ttf",
     bratLocation + "/static/fonts/PT_Sans-Caption-Web-Regular.ttf",
     bratLocation + "/static/fonts/Liberation_Sans-Regular.ttf"
   )
-
-  lazy val testBratModel: TestBratModel = new TestBratModel
-  lazy val reachBratModel: ReachBratModel with Object = ReachBratModel()
-  lazy val bratManager = new BratManager("annotation", webFontURLs)
 
   val defText =
     """
@@ -52,18 +49,10 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
 
   val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
 
-  override def bindView() = {
-    super.bindView()
-    bratManager.update(testBratModel.colData, testBratModel.docData)
-    annotations.onChange{
-      case message @ MessagesNLP.DocumentAnnotations(doc, ans) =>
-        val docData = reachBratModel.docData(doc, message.mentionsWithIDs)
-        bratManager.update(reachBratModel.colData, docData)
-    }
-  }
+  val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
 
   override lazy val injector = defaultInjector
-    .register("annotations")((el, args) => new AnnotationsView(el, annotations).withBinder(new CodeBinder(_)))
+    .register("annotations")((el, args) => new AnnotationsView(el, bratManager.elements).withBinder(new CodeBinder(_)))
 
 
 }

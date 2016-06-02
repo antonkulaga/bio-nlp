@@ -11,9 +11,22 @@ import org.scalajs.dom.raw.WebSocket
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx.Var
 
+object WebSocketNLPTransport {
 
+  def apply(protocol: String, host: String, channel: String, username: String): WebSocketNLPTransport = new  WebSocketNLPTransport(protocol, host, channel, username)
 
-case class WebSocketNLPTransport(channel: String, username: String) extends WebSocketTransport1
+  def apply(host: String, channel: String, username: String): WebSocketNLPTransport = {
+    val wsProtocol = if (dom.document.location.protocol == "https:") "wss" else "ws"
+    apply(wsProtocol, host, channel, username)
+  }
+
+  def apply(channel: String, username: String): WebSocketNLPTransport = {
+    val host = dom.document.location.host
+    apply(host, channel, username)
+  }
+}
+
+class WebSocketNLPTransport(val protocol: String, val host: String, val channel: String, username: String) extends WebSocketTransport1
 {
 
   type Input = MessagesNLP.Message
@@ -21,11 +34,6 @@ case class WebSocketNLPTransport(channel: String, username: String) extends WebS
 
   override val connected = Var(false)
   lazy val NLPready = Var(false)
-  /*
-  lazy val ready: Rx[Boolean] = Rx {
-    connected() && NLPready()
-  }
-  */
 
   input.triggerLater{
     onInput(input.now)
@@ -70,8 +78,7 @@ case class WebSocketNLPTransport(channel: String, username: String) extends WebS
   }
 
   override def getWebSocketUri(username: String): String = {
-    val wsProtocol = if (dom.document.location.protocol == "https:") "wss" else "ws"
-    s"$wsProtocol://${dom.document.location.host}/channel/$channel?username=$username"
+    s"$protocol://$host/channel/$channel?username=$username"
   }
 
   def open(): Unit = {

@@ -157,7 +157,6 @@ class ReachBratModel {
   }
 
   def docData(doc: Annotations.Document, mentions: Map[Annotations.Mention, String] ): DocData =  {
-    //val byIds = mentions.map{ case (key, value)=>(value, key)}
     val (
       entities: Map[String, Entity],
       triggers: Map[String, Entity],
@@ -188,15 +187,6 @@ class ReachBratModel {
         (ents.updated(id, ent), trigs, evs)
 
     }
-    /*
-    println("++++++++++++++++++++++++++++++++++++")
-    pprint.pprintln(entities)
-    println("####################################")
-    pprint.pprintln(triggers)
-    println("####################################")
-    pprint.pprintln(events)
-    println("====================================")
-    */
     val (entList, trigList, eventList) = (entities.values.toList, triggers.values.toList, events.values.toList)
 
     //val all: List[BratObject] = entList++trigList++eventList

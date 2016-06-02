@@ -12,6 +12,7 @@ import scala.collection.mutable
 class MentionConverter extends ReachMentionsConverters {
 
 }
+
 trait ReachElementsConverters {
   protected implicit def unwrapArray[T](arr: Option[Array[T]]): List[T] = arr.map(t => t.toList).getOrElse(Nil)
 

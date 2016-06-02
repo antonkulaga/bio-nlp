@@ -9,6 +9,9 @@ import playscalajs.PlayScalaJS
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin.autoImport._
+import chrome.Impl._
+import chrome.permissions.APIPermission._
+import net.lullabyte.{Chrome, ChromeSbtPlugin}
 
 lazy val bintrayPublishIvyStyle = settingKey[Boolean]("=== !publishMavenStyle") //workaround for sbt-bintray bug
 
@@ -72,7 +75,8 @@ lazy val annotator = crossProject
   .settings(
     name := "annotator",
     version := Versions.bioNLP
-  ).disablePlugins(RevolverPlugin)
+  )
+  .disablePlugins(RevolverPlugin)
   .jsSettings(
     libraryDependencies ++= Dependencies.sjsLibs.value,
     persistLauncher in Compile := true,
@@ -88,6 +92,52 @@ lazy val annotator = crossProject
 
 lazy val annotatorJS = annotator.js
 lazy val annotatorJVM = annotator.jvm
+
+lazy val chromeBio = (project in file("chrome-bio"))
+  .settings(commonSettings:_*)
+  .settings(
+    name := "chrome-bio",
+    version := Versions.bioNLP,
+    scalacOptions ++= Seq(
+      "-language:implicitConversions",
+      "-language:existentials",
+      "-Xlint",
+      "-deprecation",
+      "-Xfatal-warnings",
+      "-feature"
+    ),
+    persistLauncher := true,
+    persistLauncher in Test := false,
+    relativeSourceMaps := true,
+    libraryDependencies ++= Seq(
+      "net.lullabyte" %%% "scala-js-chrome" % "0.2.1" withSources() withJavadoc()
+    ),
+    chromeManifest := AppManifest(
+      name = name.value,
+      version = version.value,
+      app = App(
+        background = Background(
+          scripts = List("deps.js", "main.js", "launcher.js")
+        )
+      ),
+      defaultLocale = Some("en"),
+      icons = Chrome.icons(
+        "assets/icons",
+        "app.png",
+        Set(16, 32, 48, 64, 96, 128, 256, 512)
+      ),
+      permissions = Set(
+        System.CPU,
+        System.Display,
+        System.Memory,
+        System.Network,
+        Storage
+      )
+    )
+  )
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(ChromeSbtPlugin)
+  .dependsOn(annotatorJS)
 
 lazy val app = crossProject
   .crossType(CrossType.Full)

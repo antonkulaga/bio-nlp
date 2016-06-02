@@ -2,7 +2,7 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 {
 	val scala = "2.11.8"
 
-	val bioNLP = "0.0.1"
+	val bioNLP = "0.0.2"
 
 	val binding = "0.8.7"
 

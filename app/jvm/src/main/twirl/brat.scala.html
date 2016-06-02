@@ -1,6 +1,6 @@
 @()
 <div class="ui equal width grid" style="height: 100%; width: 100%" data-view="annotator">
-    <section class="ui comments column">
+    <section class="ui column">
         <h3 class="ui dividing header">Annotation:</h3>
         <div id="annotation">
 
@@ -11,11 +11,11 @@
                 <textarea  data-bind="text" title="Text to send for annotation:"></textarea>
             </div>
             <button class="ui blue labeled icon button" data-event-click="send" data-show-if="ready">
-                <i class="icon edit"></i> Send message
+                <i class="icon edit"></i> Annotate
             </button>
         </div>
         <div class="ui piled teal segment ui reply form">
-            <h6>Received:</h6>
+            <h6>Debug messages:</h6>
             <div class="field">
                 <textarea  data-code="message" title="received messages:"></textarea>
             </div>
@@ -23,13 +23,15 @@
         </div>
     </section>
     <section class="ui column" data-view="annotations">
-        <section data-template="true" class="ui segment">
+        <section data-template="true" class="ui segment" data-class-orange-if="highlighted">
             <p data-inner-html="code"></p>
         </section>
 
     </section>
 
-
-
-
 </div>
+<footer>
+    <small>
+        NLP part is based on REACH library of The Computational Language Understanding (CLU) Lab at University of Arizona.
+    </small>
+</footer>

@@ -1,15 +1,14 @@
 package org.denigma.brat.extensions
 
 import org.denigma.brat._
+import org.scalajs.dom.{Element, ParentNode}
+import org.denigma.binding.extensions._
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
+import org.scalajs.dom.ext._
+import org.scalajs.dom.raw.{HTMLElement, SVGElement}
 
-object BratCommands {
-  val requestRenderData  = "requestRenderData"
-  val collectionLoaded = "collectionLoaded"
-
-}
 
 class BratManager(val container: String, webFontURLs: List[String]) {
 
@@ -19,7 +18,9 @@ class BratManager(val container: String, webFontURLs: List[String]) {
   //val annotator = new AnnotatorUI(disp, visualizer.svg)
   //println(visualizer.svg)
 
-  def update(colData: ColData, docData: DocData) = {
+  protected val dataID = "data-span-id"
+
+  def update(colData: ColData, docData: DocData): BratDispatcher = {
     disp.post(BratCommands.collectionLoaded, js.Array(colData))
     disp.post(BratCommands.requestRenderData, js.Array(docData))
     disp

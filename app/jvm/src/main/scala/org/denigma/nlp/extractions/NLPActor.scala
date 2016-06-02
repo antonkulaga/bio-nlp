@@ -19,7 +19,7 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
   val filePath: String = config.as[Option[String]]("app.files").getOrElse("files/")
 
-  lazy val extractor = new BioExtractor(config.getConfig("nlp"), filePath)
+  val extractor = new BioExtractor(config.getConfig("nlp"), filePath)
 
   val converter = new MentionConverter
 
@@ -30,8 +30,8 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
     case MessagesNLP.Annotate(text) =>
       println("annotation received with text = "+text)
-      //annotate(text)
-      cacheSend()
+      annotate(text)
+      //cacheSend()
 
   }
 
