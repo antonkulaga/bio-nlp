@@ -3,6 +3,7 @@ package org.denigma.nlp.annotator
 import org.denigma.binding.binders.Events
 import org.denigma.binding.extensions._
 import org.denigma.binding.views.BindableView
+import org.denigma.brat.extensions._
 import org.denigma.brat.extensions.BratManager
 import org.denigma.controls.code.CodeBinder
 import org.denigma.nlp.communication.WebSocketNLPTransport
@@ -10,6 +11,9 @@ import org.denigma.nlp.messages._
 import org.scalajs.dom.{Element, MouseEvent}
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx._
+
+import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 
 
 class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) extends BindableView {
@@ -51,8 +55,42 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
 
   val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
 
-  override lazy val injector = defaultInjector
-    .register("annotations")((el, args) => new AnnotationsView(el, bratManager.elements).withBinder(new CodeBinder(_)))
+  def test(one: Any, two: Any): Unit = {
+
+    val a = one
+    val b = two
+    println(a)
+    println(b)
+    js.debugger()
+  }
+
+  bratManager.disp.on(BratCommands.displaySpanComment, test _)
+  import scalajs.js.JSConverters._
+/*
+ bratManager.disp.onDisplayArcComment{
+   case tuple =>
+     val arc: Tuple11[MouseEvent, ViewElement, Boolean, String, String, String, Any, Any, Any, Any, Any] = js.Tuple11.toScalaTuple11(tuple)
+     scalajs.js.debugger()
+     println("QRC COMMENT DISPLQY " + arc)
+ }
+ bratManager.disp.onDisplaySpanComment{
+   case tuple =>
+     val span= js.Tuple9.toScalaTuple9(tuple)
+     scalajs.js.debugger()
+
+     span.productIterator.foreach(println(_))
+     println("display span comment "+span)
+ }
+
+ bratManager.disp.onDisplaySentComment{
+   case tuple=>
+     val sent: Tuple4[MouseEvent, ViewElement, String, String] = tuple
+     scalajs.js.debugger()
+     println("display sent comment" + sent)
+ }
+*/
+ override lazy val injector = defaultInjector
+   .register("annotations")((el, args) => new AnnotationsView(el, bratManager.elements).withBinder(new CodeBinder(_)))
 
 
 }

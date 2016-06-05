@@ -21,6 +21,8 @@ import org.denigma.brat.extensions._
 class ReachBratManager(container: String, webFontURLs: List[String], val annotations: Var[MessagesNLP.DocumentAnnotations]) extends BratManager(container, webFontURLs){
 
   val reachBratModel = ReachBratModel()
+  //disp.post("init")
+
 
   disp.onDoneRendering{
     () =>

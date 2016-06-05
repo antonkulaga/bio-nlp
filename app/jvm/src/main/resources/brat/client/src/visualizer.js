@@ -3013,11 +3013,11 @@ Util.profileStart('before render');
         } else if (!that.arcDragOrigin && (id = target.attr('data-arc-role'))) {
           var originSpanId = target.attr('data-arc-origin');
           var targetSpanId = target.attr('data-arc-target');
-          var role = target.attr('data-arc-role');
           var symmetric = (relationTypesHash &&
-                           relationTypesHash[role] &&
-                           relationTypesHash[role].properties &&
-                           relationTypesHash[role].properties.symmetric);
+          relationTypesHash[role] &&
+          relationTypesHash[role].properties &&
+          relationTypesHash[role].properties.symmetric);
+          var role = target.attr('data-arc-role');
           // NOTE: no commentText, commentType for now
           var arcEventDescId = target.attr('data-arc-ed');
           var commentText = '';

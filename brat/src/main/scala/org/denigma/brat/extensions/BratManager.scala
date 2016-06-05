@@ -14,7 +14,7 @@ class BratManager(val container: String, webFontURLs: List[String]) {
 
   val disp = new BratDispatcher()
   val visualizer = new BratVisualizer(disp, "annotation", webFontURLs.toJSArray)
-  //val ui = new VisualizerUI(disp, visualizer.svg)
+  // val ui = new VisualizerUI(disp, visualizer.svg)
   //val annotator = new AnnotatorUI(disp, visualizer.svg)
   //println(visualizer.svg)
 

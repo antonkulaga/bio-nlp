@@ -13,7 +13,9 @@ class MentionConverter extends ReachMentionsConverters {
 
 }
 
+
 trait ReachElementsConverters {
+
   protected implicit def unwrapArray[T](arr: Option[Array[T]]): List[T] = arr.map(t => t.toList).getOrElse(Nil)
 
   protected implicit def unwrapSeq[T](col: Option[Seq[T]]): List[T] = col.map(t => t.toList).getOrElse(Nil)

@@ -39,11 +39,6 @@ class WebSocketNLPTransport(val protocol: String, val host: String, val channel:
     onInput(input.now)
   }
 
-  def collect[Output](partialFunction: PartialFunction[Input, Output])(until: PartialFunction[Input, Boolean]) = {
-    new MessageCollecter[Input, Output](input)(partialFunction)(until).future
-  }
-
-
   protected def onInput(inp: Input) = inp match {
     case MessagesNLP.Connected(uname, ch, list) if uname==username /*&& ch == channel*/ =>
       println(s"connection of user $username to $channel established")

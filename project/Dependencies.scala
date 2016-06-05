@@ -55,6 +55,10 @@ object Dependencies {
 		"org.webjars" % "jquery" % Versions.jquery,
 
 		"org.webjars" % "jquery-svg" % Versions.jquerySVG
+/*
+		"org.webjars.bower" % "jquery-ui" % Versions.jqueryUI,
+
+		"org.webjars" % "jquery-ui-themes" %  Versions.jqueryUI*/
 
 	))
 

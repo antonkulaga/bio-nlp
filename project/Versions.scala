@@ -2,11 +2,11 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 {
 	val scala = "2.11.8"
 
-	val bioNLP = "0.0.2"
+	val bioNLP = "0.0.3"
 
-	val binding = "0.8.7"
+	val binding = "0.8.8"
 
-	val bindingControls = "0.0.15"
+	val bindingControls = "0.0.16"
 
 	val betterFiles = "2.16.0"
 
@@ -18,7 +18,7 @@ trait OtherJVM {
 
 	val bcrypt = "2.4"
 
-	val ammonite = "0.5.7"
+	val ammonite = "0.5.8"
 
 	val apacheCodec = "1.10"
 
@@ -30,9 +30,9 @@ trait OtherJVM {
 
 	val logback = "1.1.7"
 
-	val akka = "2.4.6"
+	val akka = "2.4.7"
 
-	val circeHttp = "1.6.0"
+	val circeHttp = "1.7.0"
 
 	val libSBOLj = "2.1.0"
 
@@ -73,7 +73,7 @@ trait SharedVersions
 
 	val productCollections = "1.4.2"
 
-	val scalaTest = "3.0.0-M16-SNAP6"//"3.0.0-SNAP13"
+	val scalaTest = "3.0.0-RC1"//"3.0.0-SNAP13"
 
 	val scalaTestMatchers = "3.0.0-SNAP13"
 
@@ -81,13 +81,15 @@ trait SharedVersions
 
 	val quicklens = "1.4.7"
 
-	val pprint =  "0.4.0"
+	val pprint =  "0.4.1"
 }
 
 
 trait WebJarsVersions{
 
 	val jquery =  "2.2.4"
+
+	val jqueryUI = "1.11.4"
 
 	val jquerySVG = "1.5.0"
 
