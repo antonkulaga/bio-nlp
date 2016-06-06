@@ -37,6 +37,8 @@ object Dependencies {
 	lazy val sjsLibs= Def.setting(Seq(
 		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
 
+		"be.doeraene" %%% "scalajs-jquery" % Versions.jqueryFacadeOfficial,
+
 		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade, //scalajs facade for jQuery + jQuery extensions
 
 		"org.denigma" %%% "codemirror-facade" % Versions.codemirrorFacade,

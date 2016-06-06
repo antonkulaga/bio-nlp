@@ -54,7 +54,7 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
   val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
 
   val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
-
+/*
   def test(one: Any, two: Any): Unit = {
 
     val a = one
@@ -63,6 +63,7 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
     println(b)
     js.debugger()
   }
+  /*
 
   bratManager.disp.on(BratCommands.displaySpanComment, test _)
   import scalajs.js.JSConverters._
