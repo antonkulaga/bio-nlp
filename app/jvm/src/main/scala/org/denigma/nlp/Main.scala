@@ -1,18 +1,13 @@
 package org.denigma.nlp
 
 import java.io.{File => JFile}
-import java.nio.file.Path
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
-import better.files.File.OpenOptions
 import better.files._
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
-import scala.Seq
-import scala.collection.immutable._
-import scala.util.Try
 
 
 object Main extends App  {

@@ -4,16 +4,17 @@ import org.denigma.binding.binders.Events
 import org.denigma.binding.extensions._
 import org.denigma.binding.views.BindableView
 import org.denigma.brat.extensions._
-import org.denigma.brat.extensions.BratManager
 import org.denigma.controls.code.CodeBinder
 import org.denigma.nlp.communication.WebSocketNLPTransport
+import org.denigma.nlp.messages.Annotations.Mention
 import org.denigma.nlp.messages._
+import org.querki.jquery.{JQuery, JQueryEventObject}
+import org.scalajs.dom.raw.SVGElement
 import org.scalajs.dom.{Element, MouseEvent}
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx._
 
 import scala.scalajs.js
-import scala.scalajs.js.UndefOr
 
 
 class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) extends BindableView {
@@ -54,44 +55,41 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
   val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
 
   val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
-/*
-  def test(one: Any, two: Any): Unit = {
-
-    val a = one
-    val b = two
-    println(a)
-    println(b)
-    js.debugger()
-  }
-  /*
-
-  bratManager.disp.on(BratCommands.displaySpanComment, test _)
+  val elements: Rx[Map[Mention, (String, SVGElement)]] = bratManager.elements
   import scalajs.js.JSConverters._
-/*
- bratManager.disp.onDisplayArcComment{
-   case tuple =>
-     val arc: Tuple11[MouseEvent, ViewElement, Boolean, String, String, String, Any, Any, Any, Any, Any] = js.Tuple11.toScalaTuple11(tuple)
-     scalajs.js.debugger()
-     println("QRC COMMENT DISPLQY " + arc)
- }
- bratManager.disp.onDisplaySpanComment{
-   case tuple =>
-     val span= js.Tuple9.toScalaTuple9(tuple)
-     scalajs.js.debugger()
 
-     span.productIterator.foreach(println(_))
-     println("display span comment "+span)
- }
+  override def bindView(): Unit = {
+    super.bindView()
 
- bratManager.disp.onDisplaySentComment{
-   case tuple=>
-     val sent: Tuple4[MouseEvent, ViewElement, String, String] = tuple
-     scalajs.js.debugger()
-     println("display sent comment" + sent)
- }
-*/
+    bratManager.disp.onDisplaySpanComment{
+      case (event, target, id, span, attrib, text, comment, commentType, normalization) =>
+        println(event, target, id, span, attrib, text, comment, commentType, normalization)
+        //js.debugger()
+
+    bratManager.disp.onDisplayArcComment{
+      case params =>
+        //val arc: Tuple11[MouseEvent, ViewElement, Boolean, String, String, String, Any, Any, Any, Any, Any] = js.Tuple11.toScalaTuple11(tuple)
+        println("ARC COMMENT DISPLAY \n " + params)
+        //scalajs.js.debugger()
+    }
+
+    bratManager.disp.onDisplaySentComment{
+      case sent =>
+        println("display SENT comment" + sent)
+        scalajs.js.debugger()
+    }
+
+  }
+
+
+
+    //event: JQueryEventObject, target: JQuery,
+    //id: String, span: String, attributes: js.Array[Any],
+    //spanText: String, commentText: js.UndefOr[String], commentType: js.UndefOr[String], normalizations: Any
+  }
+
  override lazy val injector = defaultInjector
-   .register("annotations")((el, args) => new AnnotationsView(el, bratManager.elements).withBinder(new CodeBinder(_)))
+   .register("annotations")((el, args) => new AnnotationsView(el, elements).withBinder(new CodeBinder(_)))
 
 
 }

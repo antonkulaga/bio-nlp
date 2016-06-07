@@ -43,7 +43,6 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
       "triggered by: "+mention.trigger+"<br>"+
       "intervals: "+mention.tokenInterval+"<br>"
 
-
     case mention :Annotations.BioMention =>
       "labels: "+mention.labels+"<br>"+
       "foundby: "+mention.foundBy+"<br>"+
@@ -53,16 +52,11 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
       "modifications: "+mention.modifications+"<br>"+
       "intervals: "+mention.tokenInterval+"<br>"
 
-
-
     case mention =>
       "labels: "+mention.labels+"<br>"+
       "foundby: "+mention.foundBy+"<br>"+
       "arguments: "+mention.arguments+"<br>"+
       "intervals: "+mention.tokenInterval+"<br>"
-
-
-
   }
 
   protected def miriamClick(event: MouseEvent): Unit = mention match {

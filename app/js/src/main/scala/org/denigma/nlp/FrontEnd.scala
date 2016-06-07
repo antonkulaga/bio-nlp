@@ -26,7 +26,6 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
 
   val message: Var[String] = Var("")
 
-
   this.withBinders(me => List(new CodeBinder(me), new NavigationBinder(me)))
 
   @JSExport

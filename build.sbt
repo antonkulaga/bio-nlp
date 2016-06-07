@@ -1,3 +1,4 @@
+import chrome.permissions.{HostPermission, APIPermission}
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.gzip.Import.gzip
 import com.typesafe.sbt.web.SbtWeb.autoImport._
@@ -106,12 +107,15 @@ lazy val chromeBio = (project in file("chrome-bio"))
       "-Xfatal-warnings",
       "-feature"
     ),
+    chromePackageContent := (baseDirectory in thisProject).value / "content",
     persistLauncher := true,
     persistLauncher in Test := false,
     relativeSourceMaps := true,
     libraryDependencies ++= Seq(
       "net.lullabyte" %%% "scala-js-chrome" % "0.2.1" withSources() withJavadoc()
     ),
+    skip in packageJSDependencies := false,
+    /*
     chromeManifest := AppManifest(
       name = name.value,
       version = version.value,
@@ -124,16 +128,23 @@ lazy val chromeBio = (project in file("chrome-bio"))
       icons = Chrome.icons(
         "assets/icons",
         "app.png",
-        Set(16, 32, 48, 64, 96, 128, 256, 512)
+        Set(16, 32, 48, 64, 96)
       ),
       permissions = Set(
-        System.CPU,
+        Tabs,
         System.Display,
-        System.Memory,
         System.Network,
-        Storage
+        Storage,
+        Browser,
+        APIPermission( "contextMenus", "permission to add items to content menus"),
+        Location,
+        Experimental
       )
     )
+    */
+    chromeGenerateManifest := {
+      chromePackageContent.value / "manifest.json"
+    }
   )
   .disablePlugins(RevolverPlugin)
   .enablePlugins(ChromeSbtPlugin)
@@ -198,5 +209,5 @@ lazy val root = Project("root",file("."),settings = commonSettings)
     packageDescription := """BIO NLP akka-http service for nuggets extraction""",
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint", "-J-Xss5M"),
     initialCommands in (Test, console) := Console.out,
-    debugSettings := Some(spray.revolver.DebugSettings(5005, false))
+    debugSettings := Some(spray.revolver.DebugSettings(5005, suspend = false))
   ) dependsOn appJVM aggregate(appJVM, appJS) enablePlugins JavaServerAppPackaging

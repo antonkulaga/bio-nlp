@@ -22,7 +22,7 @@ trait OtherJVM {
 
 	val apacheCodec = "1.10"
 
-	val akkaHttpExtensions = "0.0.12"
+	val akkaHttpExtensions = "0.0.13"
 
 	val retry = "0.2.1"
 

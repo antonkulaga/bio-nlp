@@ -21,7 +21,6 @@ import org.denigma.brat.extensions._
 class ReachBratManager(container: String, webFontURLs: List[String], val annotations: Var[MessagesNLP.DocumentAnnotations]) extends BratManager(container, webFontURLs){
 
   val reachBratModel = ReachBratModel()
-  //disp.post("init")
 
 
   disp.onDoneRendering{
@@ -30,19 +29,16 @@ class ReachBratManager(container: String, webFontURLs: List[String], val annotat
     if(svg!=null)
       {
         named() = extractLinks(svg).toMap
-        named.now.foreach(n=>pprint.pprintln(n))
+        //named.now.foreach(n=>pprint.pprintln(n))
       } else dom.console.error("SVG IS NULL")
   }
 
-  val mentions = annotations.map(ans=>ans.mentionsWithIDs)
+  val mentions: Dynamic[Map[Mention, String]] = annotations.map(ans=>ans.mentionsWithIDs)
   val named: Var[Map[String, SVGElement]] =  Var(Map.empty[String, SVGElement])
   val elements: Rx[Map[Mention, (String, SVGElement)]] = named.map{ case mp =>
-    //val not: Map[Mention, String] = mentions.now.collect{  case (men, id) if !mp.contains(id) => men -> id  }
-    //not.foreach(m=>pprint.pprintln(m))
     mentions.now.collect{
       case (men, id) if mp.contains(id) => men -> (id, mp(id))
     }
-
   }
 
   mentions.onChange{
@@ -56,19 +52,17 @@ class ReachBratManager(container: String, webFontURLs: List[String], val annotat
   protected def hasAttribute(el: SVGElement, att: String) = el != null && /*!js.isUndefined(el.dyn.hasAttribute) &&*/ el.hasAttribute(att)
 
   protected def extractLinks(element: SVGElement): List[(String, SVGElement)] = element match {
-   // case el if js.isUndefined(el.dyn.children) || js.isUndefined(el.dyn.hasAttribute) => Nil
-
     case el if hasAttribute(el, dataID) =>
       el.getAttribute(dataID) -> el::Nil
 
     case other =>
-      other.children.foldLeft(List.empty[(String,SVGElement)]){
+      other.children.foldLeft(List.empty[(String, SVGElement)]){
         case (acc, el: SVGElement) =>
           extractLinks(el) match {
             case e::Nil => e::acc
             case els => els ++ acc
           }
-        case (acc, _) => println("something else"+other)
+        case (acc, _) => dom.console.error("something else"+other)
           acc
       }
   }
