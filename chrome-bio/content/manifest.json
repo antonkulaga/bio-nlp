@@ -9,17 +9,17 @@
     "96":"assets/icons/96/app.png",
     "64":"assets/icons/64/app.png"
   },
-  "permissions": ["tabs","system.display","storage","contextMenus"],
+  "permissions": ["tabs","system.display","storage","contextMenus", "http://*/", "https://*/", "wss://*", "ws://*"],
   "default_locale":"en",
   "background":{
     "scripts" : ["deps.js","main.js","launcher.js"]
-    },
+  },
   "browser_action": {
     "default_icon": {
       "19": "assets/icons/19/app.png",
       "38":"assets/icons/38/app.png"
     },
-    "default_title": "Annotate BIO",
-    "default_popup": "Annotate.html"
-  }
+    "default_title": "Annotate BIO"
+  },
+  "options_page": "assets/html/options.html"
 }

@@ -51,7 +51,7 @@ trait ScalaJSVersions {
 
 	val jqueryFacadeOfficial = "0.9.0"
 
-	val dom = "0.9.0"
+	val dom = "0.9.1"
 
 	val codemirrorFacade = "5.11-0.7"
 

@@ -96,6 +96,9 @@ lazy val annotatorJVM = annotator.jvm
 
 lazy val chromeBio = (project in file("chrome-bio"))
   .settings(commonSettings:_*)
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(ChromeSbtPlugin)
+  .dependsOn(annotatorJS)
   .settings(
     name := "chrome-bio",
     version := Versions.bioNLP,
@@ -115,40 +118,19 @@ lazy val chromeBio = (project in file("chrome-bio"))
       "net.lullabyte" %%% "scala-js-chrome" % "0.2.1" withSources() withJavadoc()
     ),
     skip in packageJSDependencies := false,
-    /*
-    chromeManifest := AppManifest(
-      name = name.value,
-      version = version.value,
-      app = App(
-        background = Background(
-          scripts = List("deps.js", "main.js", "launcher.js")
-        )
-      ),
-      defaultLocale = Some("en"),
-      icons = Chrome.icons(
-        "assets/icons",
-        "app.png",
-        Set(16, 32, 48, 64, 96)
-      ),
-      permissions = Set(
-        Tabs,
-        System.Display,
-        System.Network,
-        Storage,
-        Browser,
-        APIPermission( "contextMenus", "permission to add items to content menus"),
-        Location,
-        Experimental
+    chromeBuildOpt := {
+      Chrome.buildExtentionDirectory(target.value / "chrome" / "unpacked")(
+        (chromeGenerateManifest in Compile).value,
+        (fastOptJS in Compile).value.data,
+        (packageJSDependencies in Compile).value,
+        (packageScalaJSLauncher in Compile).value.data,
+        (chromePackageContent in Compile).value
       )
-    )
-    */
+    },
     chromeGenerateManifest := {
       chromePackageContent.value / "manifest.json"
     }
   )
-  .disablePlugins(RevolverPlugin)
-  .enablePlugins(ChromeSbtPlugin)
-  .dependsOn(annotatorJS)
 
 lazy val app = crossProject
   .crossType(CrossType.Full)
