@@ -21,5 +21,12 @@
     },
     "default_title": "Annotate BIO"
   },
-  "options_page": "assets/html/options.html"
+  "options_page": "assets/html/options.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/", "https://*/", "wss://*", "ws://*"],
+      "css": ["mystyles.css"],
+      "js": ["jquery.js", "myscript.js"]
+    }
+  ]
 }

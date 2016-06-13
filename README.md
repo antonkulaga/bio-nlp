@@ -25,4 +25,4 @@ WARNING: if you have issues with REACH dependency resolutions - git clone and pu
 Chrome-Bio
 ----------
 A chrome extension that allows to annotate biological texts. 
-It is on a very early stage, nothing works yet
+It is on a very early stage.

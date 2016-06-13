@@ -39,8 +39,6 @@ object ChromeBio extends js.JSApp {
     println("ID IS "+id)
   }
 
-
-
   def onStartup(fn: Unit): Unit =
   {
     println("started with"+fn)

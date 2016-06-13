@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Annotate BIO",
+    "description": "NLP extension that annotates biological texts"
+  },
+  "appDesc": {
+    "message": "",
+    "description":"NLP extension that annotates biological texts"
+  },
+  "memory": {
+    "message": "Memory",
+    "description":""
+  }
+}

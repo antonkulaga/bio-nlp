@@ -91,12 +91,16 @@ lazy val annotator = crossProject
     dependencyOverrides += "org.biopax.paxtools" % "paxtools-core" % Versions.paxtools
   )
 
+lazy val chromeTarget = SettingKey[File]("chromeTarget",
+  "The target to which everything will be copied")
+
 lazy val annotatorJS = annotator.js
 lazy val annotatorJVM = annotator.jvm
 
 lazy val chromeBio = (project in file("chrome-bio"))
   .settings(commonSettings:_*)
   .disablePlugins(RevolverPlugin)
+  .enablePlugins(SbtWeb)
   .enablePlugins(ChromeSbtPlugin)
   .dependsOn(annotatorJS)
   .settings(
@@ -110,25 +114,46 @@ lazy val chromeBio = (project in file("chrome-bio"))
       "-Xfatal-warnings",
       "-feature"
     ),
-    chromePackageContent := (baseDirectory in thisProject).value / "content",
+    (chromePackageContent in Compile) := (WebKeys.public in Assets).value,
+    (chromeTarget in Compile) := target.value / "chrome",
     persistLauncher := true,
     persistLauncher in Test := false,
     relativeSourceMaps := true,
     libraryDependencies ++= Seq(
       "net.lullabyte" %%% "scala-js-chrome" % "0.2.1" withSources() withJavadoc()
     ),
+    (managedClasspath in Runtime) += (packageBin in Assets).value,
     skip in packageJSDependencies := false,
-    chromeBuildOpt := {
-      Chrome.buildExtentionDirectory(target.value / "chrome" / "unpacked")(
-        (chromeGenerateManifest in Compile).value,
-        (fastOptJS in Compile).value.data,
-        (packageJSDependencies in Compile).value,
-        (packageScalaJSLauncher in Compile).value.data,
-        (chromePackageContent in Compile).value
-      )
-    },
     chromeGenerateManifest := {
-      chromePackageContent.value / "manifest.json"
+      (chromePackageContent in Compile).value / "manifest.json"
+    },
+    chromeBuildFast := {
+      val tg = (chromeTarget in Compile).value
+      val unpacked = tg / "unpacked"
+      val webjars =  (WebKeys.webJarsDirectory in Assets).value
+      IO.createDirectory(unpacked)
+      val manifest = (chromeGenerateManifest in Compile).value
+      val jsLib = (fastOptJS in Compile).value.data
+      val jsDeps = (packageJSDependencies in Compile).value
+      val jsLauncher = (packageScalaJSLauncher in Compile).value.data
+      val content = (chromePackageContent in Compile).value
+      IO.copyDirectory(webjars, unpacked, overwrite = true, preserveLastModified = true)
+      IO.copyDirectory(content, unpacked, overwrite = true, preserveLastModified = true)
+      val forCopy = List(
+        (jsLib, unpacked / "main.js"),
+        (jsDeps, unpacked / "deps.js"),
+        (jsLauncher, unpacked / "launcher.js"),
+        (manifest, unpacked / "manifest.json")
+      )
+      IO.copy(forCopy)
+      unpacked
+    },
+    chromePackage := {
+      val out = (chromeTarget in Compile).value
+      val chromeAppDir = chromeBuildFast.value
+      val zipFile = new File(out, s"${name.value}.zip")
+      IO.zip(allSubpaths(chromeAppDir), zipFile)
+      zipFile
     }
   )
 
