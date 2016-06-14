@@ -1,5 +1,6 @@
 package chrome.browserAction.bindings
 
+import chrome.events.bindings.Event
 import chrome.tabs.bindings.Tab
 
 import scala.scalajs.js
@@ -12,17 +13,11 @@ import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
 @JSName("chrome.browserAction")
 object BrowserAction extends js.Object {
 
+  val onClicked: Event[js.Function1[Tab, _]] = js.native
+
   def setPopup(popupDetails: PopupDetails): Any = js.native
 
   def getPopup(tabDetails: TabDetails, callback: js.Function1[String, Unit]): Unit = js.native
-
-}
-
-@js.native
-@JSName("chrome.browserAction.onClicked")
-object OnBrowserActionClicked extends js.Object {
-
-  def addListener(callback: js.Function1[Tab, Unit]): Unit = js.native
 
 }
 

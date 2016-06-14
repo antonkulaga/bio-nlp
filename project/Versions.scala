@@ -12,6 +12,8 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 
 	val reach = "1.2.3"
 
+	val scalaJsChrome = "0.2.1"
+
 }
 
 trait OtherJVM {
@@ -75,7 +77,7 @@ trait SharedVersions
 
 	val productCollections = "1.4.2"
 
-	val scalaTest = "3.0.0-RC1"//"3.0.0-SNAP13"
+	val scalaTest = "3.0.0-RC2"//"3.0.0-SNAP13"
 
 	val scalaTestMatchers = "3.0.0-SNAP13"
 

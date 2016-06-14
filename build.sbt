@@ -1,18 +1,15 @@
-import chrome.permissions.{HostPermission, APIPermission}
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.gzip.Import.gzip
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 import com.typesafe.sbt.web.pipeline.Pipeline
 import com.typesafe.sbt.web.{PathMapping, SbtWeb}
+import net.lullabyte.ChromeSbtPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPluginInternal
 import playscalajs.PlayScalaJS
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin.autoImport._
-import chrome.Impl._
-import chrome.permissions.APIPermission._
-import net.lullabyte.{Chrome, ChromeSbtPlugin}
 
 lazy val bintrayPublishIvyStyle = settingKey[Boolean]("=== !publishMavenStyle") //workaround for sbt-bintray bug
 
@@ -92,7 +89,10 @@ lazy val annotator = crossProject
   )
 
 lazy val chromeTarget = SettingKey[File]("chromeTarget",
-  "The target to which everything will be copied")
+  "Target for chrome files")
+
+lazy val chromeUnpacked = SettingKey[File]("chromeUnpacked",
+  "Unpacked chrome application")
 
 lazy val annotatorJS = annotator.js
 lazy val annotatorJVM = annotator.jvm
@@ -114,13 +114,15 @@ lazy val chromeBio = (project in file("chrome-bio"))
       "-Xfatal-warnings",
       "-feature"
     ),
-    (chromePackageContent in Compile) := (WebKeys.public in Assets).value,
+    (chromePackageContent in Compile) := (resourceDirectory in Assets).value,
     (chromeTarget in Compile) := target.value / "chrome",
+    (chromeUnpacked in Compile) := (chromeTarget in Compile).value / "unpacked",
     persistLauncher := true,
     persistLauncher in Test := false,
     relativeSourceMaps := true,
     libraryDependencies ++= Seq(
-      "net.lullabyte" %%% "scala-js-chrome" % "0.2.1" withSources() withJavadoc()
+      "net.lullabyte" %%% "scala-js-chrome" % Versions.scalaJsChrome withSources() withJavadoc(),
+      "org.webjars" % "Semantic-UI" %  Versions.semanticUI
     ),
     (managedClasspath in Runtime) += (packageBin in Assets).value,
     skip in packageJSDependencies := false,
@@ -129,14 +131,14 @@ lazy val chromeBio = (project in file("chrome-bio"))
     },
     chromeBuildFast := {
       val tg = (chromeTarget in Compile).value
-      val unpacked = tg / "unpacked"
+      val unpacked = (chromeUnpacked in Compile).value
       val webjars =  (WebKeys.webJarsDirectory in Assets).value
       IO.createDirectory(unpacked)
+      val content: File = (chromePackageContent in Compile).value
       val manifest = (chromeGenerateManifest in Compile).value
       val jsLib = (fastOptJS in Compile).value.data
       val jsDeps = (packageJSDependencies in Compile).value
       val jsLauncher = (packageScalaJSLauncher in Compile).value.data
-      val content = (chromePackageContent in Compile).value
       IO.copyDirectory(webjars, unpacked, overwrite = true, preserveLastModified = true)
       IO.copyDirectory(content, unpacked, overwrite = true, preserveLastModified = true)
       val forCopy = List(

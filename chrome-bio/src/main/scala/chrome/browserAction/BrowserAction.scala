@@ -1,13 +1,15 @@
 package chrome.browserAction
 
 import chrome.browserAction.bindings.TabDetails
+import chrome.events.EventSource
+import chrome.events.EventSourceImplicits._
 import chrome.tabs.bindings.Tab
 
 import scala.concurrent.{Future, Promise}
 
 object BrowserAction {
 
-  def addOnClick(callback: (Tab) => Unit): Unit = bindings.OnBrowserActionClicked.addListener(callback)
+  def onClicked: EventSource[Tab] = bindings.BrowserAction.onClicked
 
   def getPopup(tabDetails: TabDetails): Future[String] = {
     val p = Promise[String]

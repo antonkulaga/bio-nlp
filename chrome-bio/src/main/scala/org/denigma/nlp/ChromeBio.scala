@@ -1,58 +1,36 @@
 package org.denigma.nlp
 
-import chrome.browserAction.BrowserAction
-import chrome.contextMenus.ContextMenus
-import chrome.contextMenus.bindings.MenuInfo
-import chrome.runtime.Runtime
-import chrome.runtime.bindings.Port
-import chrome.tabs.Tabs
-import chrome.tabs.bindings.{Tab, TabCreateProperties}
-import org.scalajs.dom
-
 import scala.scalajs.js
-
-
+import scala.scalajs.js.annotation.JSExport
 
 object ChromeBio extends js.JSApp {
 
+  lazy val manager = new ExtensionManager() //lazy so it starts only in background script
+
+  @JSExport
   def main(): Unit = {
-    println("let the extension start!!!")
-    addMenus()
-    BrowserAction.addOnClick{
-      case tab=>
-        dom.window.alert("tab with url "+tab.url+" was clicked!")
-    }
-    Runtime.onStartup.listen(onStartup)
-    Runtime.onConnect.listen(onConnect)
-    Runtime.onConnectExternal.listen(onConnectExternal)
+    manager.init()
   }
 
-  protected def selectionHandler(info: MenuInfo, tab:  Tab) = {
-    val i = info
-    val t = tab
-    println("selection clicked")
+  lazy val optionsView = new OptionsView()
+
+  @JSExport
+  def options(): Unit = {
+    optionsView.bindView()
   }
 
-  protected def addMenus() = {
-    ContextMenus.addOnClick(selectionHandler)
-    val id = ContextMenus.create("nlpSelection", "Anylyze selection!", List("selection"))
-    println("ID IS "+id)
+  lazy val contentManager = new ContentManager()
+
+  @JSExport
+  def content(): Unit = {
+    contentManager.bindView()
   }
 
-  def onStartup(fn: Unit): Unit =
-  {
-    println("started with"+fn)
-    println("it should test context")
-    addMenus()
-  }
+  lazy val popupView = new PopupView()
 
-  def onConnect(port: Port) = {
-    println("connected with a port " +port.name)
+  @JSExport
+  def popup(): Unit = {
+    popupView.bindView()
   }
-
-  def onConnectExternal(port: Port) = {
-    println("externally connected with a port " +port.name)
-  }
-
 
 }

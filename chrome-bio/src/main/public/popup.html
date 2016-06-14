@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="js/content.js"></script>
+    <script src="js/webfont.js"></script>
+
+    <script type="text/javascript" src="brat/configuration.js"></script>
+    <script type="text/javascript" src="brat/util.js"></script>
+    <script type="text/javascript" src="brat/dispatcher.js"></script>
+    <script type="text/javascript" src="brat/visualizer.js"></script>
+    <link rel="stylesheet" type="text/css" href="brat/style-vis.css"/>
+
+</head>
+<body id="popup">
+    <div class="ui equal width grid">
+        <section class="ui column">
+            <h3 class="ui dividing header">Annotation:</h3>
+            <div id="annotation">
+
+            </div>
+            <div class="ui reply form">
+                <h6>Text to send for annotation:</h6>
+                <div class="field">
+                    <textarea  data-bind="text" title="Text to send for annotation:"></textarea>
+                </div>
+                <button class="ui blue labeled icon button" data-event-click="send" data-show-if="ready">
+                    <i class="icon edit"></i> Annotate
+                </button>
+            </div>
+            <div class="ui piled teal segment ui reply form">
+                <h6>Debug messages:</h6>
+                <div class="field">
+                    <textarea  data-code="message" title="received messages:"></textarea>
+                </div>
+
+            </div>
+        </section>
+    </div>
+    <footer>
+        <small>
+            NLP part is based on REACH library of The Computational Language Understanding (CLU) Lab at University of Arizona.
+        </small>
+    </footer>
+</body>
+</html>

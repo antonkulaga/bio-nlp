@@ -1,22 +1,22 @@
 package org.denigma.nlp
 
 import org.denigma.binding.binders.NavigationBinder
-import org.denigma.binding.extensions.sq
 import org.denigma.binding.views.BindableView
 import org.denigma.controls.code.CodeBinder
-import org.denigma.controls.login.AjaxSession
 import org.denigma.nlp.annotator.AnnotatorView
 import org.denigma.nlp.communication.WebSocketNLPTransport
 import org.scalajs.dom
-import org.scalajs.dom.raw.Element
-import rx._
+import org.scalajs.dom.Element
+import rx.Var
 
 import scala.scalajs.js.annotation.JSExport
-@JSExport("FrontEnd")
-object FrontEnd extends BindableView with scalajs.js.JSApp
-{
+class PopupView extends BindableView {
+  println("DOCUMENT IS +"+dom.document.body)
+  println("BODY IS +"+dom.document.body.outerHTML)
 
-  override lazy val id: String = "main"
+  override lazy val id: String = "popup"
+
+
 
   lazy val elem: Element = dom.document.body
 
@@ -26,11 +26,8 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
 
   this.withBinders(me => List(new CodeBinder(me), new NavigationBinder(me)))
 
-  @JSExport
-  def main(): Unit = {
-
-    this.bindView()
-
+  override def bindView() = {
+    super.bindView()
     connector.open()
   }
 
@@ -39,22 +36,5 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
     */
   override lazy val injector = defaultInjector
     .register("annotator")((el, args) => new AnnotatorView(el, connector).withBinder(new CodeBinder(_)))
-
-
-  @JSExport
-  def load(content: String, into: String): Unit = {
-    dom.document.getElementById(into).innerHTML = content
-  }
-
-  @JSExport
-  def moveInto(from: String, into: String): Unit = {
-    for {
-      ins <- sq.byId(from)
-      intoElement <- sq.byId(into)
-    } {
-      this.loadElementInto(intoElement, ins.innerHTML)
-      ins.parentNode.removeChild(ins)
-    }
-  }
 
 }

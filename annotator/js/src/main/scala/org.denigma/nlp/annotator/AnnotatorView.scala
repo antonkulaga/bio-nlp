@@ -61,10 +61,11 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
   override def bindView(): Unit = {
     super.bindView()
 
-    bratManager.disp.onDisplaySpanComment{
+    bratManager.disp.onDisplaySpanComment {
       case (event, target, id, span, attrib, text, comment, commentType, normalization) =>
         println(event, target, id, span, attrib, text, comment, commentType, normalization)
-        //js.debugger()
+      //js.debugger()
+    }
 
     bratManager.disp.onDisplayArcComment{
       case params =>
@@ -78,14 +79,6 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
         println("display SENT comment" + sent)
         scalajs.js.debugger()
     }
-
-  }
-
-
-
-    //event: JQueryEventObject, target: JQuery,
-    //id: String, span: String, attributes: js.Array[Any],
-    //spanText: String, commentText: js.UndefOr[String], commentType: js.UndefOr[String], normalizations: Any
   }
 
  override lazy val injector = defaultInjector

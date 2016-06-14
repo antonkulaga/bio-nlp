@@ -1,0 +1,33 @@
+{
+  "name":"chrome-bio",
+  "manifest_version":2,
+  "version":"0.0.3",
+  "icons": {
+    "16": "icons/16/app.png",
+    "48":"icons/48/app.png",
+    "32":"icons/32/app.png",
+    "96":"icons/96/app.png",
+    "64":"icons/64/app.png"
+  },
+  "permissions": ["tabs","system.display","storage","contextMenus", "http://*/", "https://*/"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "default_locale":"en",
+  "background":{
+    "scripts" : ["deps.js","main.js","launcher.js"]
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "icons/19/app.png",
+      "38":"icons/38/app.png"
+    },
+    "default_title": "Annotate BIO",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["lib/jquery/jquery.min.js", "js/selectionchange.js", "deps.js", "main.js", "js/content.js"]
+    }
+  ]
+}
