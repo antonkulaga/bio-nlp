@@ -15,11 +15,15 @@ import scala.language.implicitConversions
 
 class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
+  println("starting NLP actor...")
+
   lazy val cacheFile = files / "anno.binary"
 
   val filePath: String = config.as[Option[String]]("app.files").getOrElse("files/")
 
   /*lazy */val extractor = new BioExtractor(config.getConfig("nlp"), filePath)
+
+  println("NLP actor started...")
 
   val converter = new MentionConverter
 

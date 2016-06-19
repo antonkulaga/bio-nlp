@@ -62,7 +62,7 @@ lazy val brat = (project in file("brat"))
     version := Versions.bratFacade,
     scalaVersion := Versions.scala,
     libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.9.0"
+    "org.scala-js" %%% "scalajs-dom" % Versions.dom
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay)
 
@@ -217,6 +217,7 @@ lazy val root = Project("root",file("."),settings = commonSettings)
     packageSummary := "bio-nlp",
     packageDescription := """BIO NLP akka-http service for nuggets extraction""",
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint", "-J-Xss5M"),
+    javaOptions in reStart += "-Xmx6g",
     initialCommands in (Test, console) := Console.out,
     debugSettings := Some(spray.revolver.DebugSettings(5005, suspend = false))
   ) dependsOn appJVM aggregate(appJVM, appJS) enablePlugins JavaServerAppPackaging

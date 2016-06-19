@@ -19,10 +19,14 @@ Annotator
 This subproject is a lib that contains:
  * scala-js-binding based controls to display annotations
  * case classes for communicating between client and bio-nlp server
-WARNING: if you have issues with REACH dependency resolutions - git clone and publishLocal REACH.
-
 
 Chrome-Bio
 ----------
 A chrome extension that allows to annotate biological texts. 
 It is on a very early stage.
+
+App
+---
+
+Subproject that runs the server with Reach.
+WARNING: NLP eats a lot of memory, make sure that you have at least 6 GB of RAM.

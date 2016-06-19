@@ -10,11 +10,7 @@ object Dependencies {
 
 	//libs for testing
   lazy val testing = Def.setting(Seq(
-		"org.scalatest" %%% "scalatest" % Versions.scalaTest % Test,
-
-		"org.scalatest" %%% "scalatest-matchers" % Versions.scalaTestMatchers % Test,
-
-		"org.scalatest" %%% "scalatest-wordspec" % Versions.scalaTestMatchers % Test
+		"org.scalatest" %%% "scalatest" % Versions.scalaTest % Test
   ))
 
 	//akka-related libs
@@ -36,11 +32,7 @@ object Dependencies {
 	//scalajs libs
 	lazy val sjsLibs= Def.setting(Seq(
 		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
-
-		"be.doeraene" %%% "scalajs-jquery" % Versions.jqueryFacadeOfficial,
-
-		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade, //scalajs facade for jQuery + jQuery extensions
-
+		
 		"org.denigma" %%% "codemirror-facade" % Versions.codemirrorFacade,
 
 		"org.denigma" %%% "threejs-facade" % Versions.threejsFacade,
