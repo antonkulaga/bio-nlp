@@ -3,6 +3,9 @@ package org.denigma.nlp.pubmed
 case class EntrezDatabase(name: String, UID: String, eUtility_Name: String)
 
 object EntrezDatabase {
+
+
+
   val BioProject = EntrezDatabase("BioProject", "BioProject ID", "bioproject")
   val BioSample = EntrezDatabase("BioSample", "BioSample ID", "biosample")
   val Biosystems = EntrezDatabase("Biosystems", "BSID", "biosystems")

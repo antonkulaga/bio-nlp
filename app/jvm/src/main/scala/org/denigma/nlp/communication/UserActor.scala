@@ -5,8 +5,11 @@ import java.io.{File => JFile}
 import akka.actor.ActorRef
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage}
 import akka.stream.actor.ActorPublisherMessage
+import akka.util.ByteString
 import boopickle.DefaultBasic._
 import org.denigma.nlp.messages._
+
+import scala.util.{Failure, Success}
 
 class UserActor(val username: String, nlp: ActorRef) extends Messenger
 {
@@ -33,6 +36,21 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
     case SocketMessages.IncomingMessage(channel, uname, message: BinaryMessage.Strict, time) =>
       val mes = Unpickle[MessagesNLP.Message].fromBytes(message.data.toByteBuffer)
       onMessageNLP(mes)
+
+    case SocketMessages.IncomingMessage(channel, uname, message: BinaryMessage.Streamed, time) =>
+      //message.dataStream.runWi
+      val bytes = message.dataStream.runReduce[ByteString]{
+        case (a, b) => a ++ b
+      }
+      bytes.onComplete{
+        case Failure(th)=>
+          log.error("Binary streaming failed")
+
+        case Success(data) =>
+          log.info("Binary streaming received!")
+          val mes = Unpickle[MessagesNLP.Message].fromBytes(data.toByteBuffer)
+          onMessageNLP(mes)
+      }
     //log.error(s"something binary received on $channel by $username")
   }
 

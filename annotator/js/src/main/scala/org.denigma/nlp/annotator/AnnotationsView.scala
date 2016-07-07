@@ -63,7 +63,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
     case bio: Grounding =>
       bio.grounding match {
         case Some(res) =>
-          dom.window.open(res.entry.miriam, "_blank", replace = false)
+          dom.window.open(res.entry.url, "_blank", replace = false)
         case None => println("no resolution")
       }
 

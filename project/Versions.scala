@@ -71,7 +71,7 @@ trait SharedVersions
 
 	val scalaCSS = "0.4.1"
 
-	val scalaTest = "3.0.0-RC2"//"3.0.0-SNAP13"
+	val scalaTest = "3.0.0-RC4"//"3.0.0-SNAP13"
 
 	val fastparse = "0.3.7"
 
@@ -89,7 +89,7 @@ trait WebJarsVersions{
 
 	val jquerySVG = "1.5.0"
 
-	val semanticUI = "2.1.8"
+	val semanticUI = "2.2"
 
 	val codemirror = "5.13.2"
 
