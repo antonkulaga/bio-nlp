@@ -48,7 +48,11 @@ object KBEntry {
 
 case class KBEntry(id: String, text: String, key: String, namespace: String, species: String)
 {
-  lazy val miriam = s"http://identifiers.org/${namespace}/${id}"
+  //lazy val miriam = s"http://identifiers.org/${namespace}/${id}"
+
+  lazy val url = namespace match {
+    case other =>s"http://identifiers.org/${namespace}/${id}" //miriam
+  }
 }
 
 object KBResolution {

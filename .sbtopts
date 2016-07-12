@@ -1,4 +1,4 @@
 -J-Xss256M
 -J-Xms512m
--J-Xmx6G
+-J-Xmx4G
 -J-XX:+UseConcMarkSweepGC
