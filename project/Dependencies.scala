@@ -80,6 +80,8 @@ object Dependencies {
 
 		"com.iheart" %% "ficus" % Versions.ficus,
 
+		"com.github.pathikrit"  %% "better-files"  % Versions.betterFiles,
+
 		"com.github.pathikrit"  %% "better-files-akka"  % Versions.betterFiles,
 
 		"org.biopax.paxtools" % "paxtools-core" % Versions.paxtools,

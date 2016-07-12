@@ -5,16 +5,28 @@ import org.denigma.binding.extensions._
 import org.denigma.binding.views.BindableView
 import org.denigma.brat.extensions._
 import org.denigma.controls.code.CodeBinder
+import org.denigma.nlp.annotator
+import org.denigma.nlp.annotator.Application.WaitingServer
 import org.denigma.nlp.communication.WebSocketNLPTransport
 import org.denigma.nlp.messages.Annotations.Mention
 import org.denigma.nlp.messages._
 import org.querki.jquery.{JQuery, JQueryEventObject}
+import org.scalajs.dom
 import org.scalajs.dom.raw.SVGElement
 import org.scalajs.dom.{Element, MouseEvent}
 import rx.Ctx.Owner.Unsafe.Unsafe
 import rx._
 
 import scala.scalajs.js
+
+object Application {
+  sealed trait Status
+  case object WaitingConnection extends Status
+  case object WaitingServer extends Status
+  case class Annotating(text: String) extends Status
+  case object Ready extends Status
+
+}
 
 
 class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) extends BindableView {
@@ -35,31 +47,73 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
 
   val message = Var("")
 
-  val ready = connector.NLPready
+  val caption = Var()
+
+  //val ready = connector.NLPready
+
+  val status: Var[Application.Status] = Var(Application.WaitingServer)
+
+
+  val waitingConnection = status.map{
+    case Application.WaitingConnection => true
+    case _ => false
+  }
+
+  val waitingServer = status.map{
+    case Application.WaitingServer => true
+    case _ => false
+  }
+
+  val ready = status.map{
+    case Application.Ready => true
+    case _ => false
+  }
+
+  val annotating = status.map{
+    case Application.Annotating(_) => true
+    case _ => false
+  }
 
   val send: Var[MouseEvent] = Var(Events.createMouseEvent())
   send.triggerLater{
       val mess = MessagesNLP.Annotate(text.now)
       connector.send(mess)
+      status() = Application.Annotating(text.now)
     }
 
-  connector.input.onChange{
-    case inp @ MessagesNLP.DocumentAnnotations(doc, mentions) =>
-      message() = pprint.tokenize(inp.toString, width = 300).mkString("\n")
-      annotations() = inp
 
-    case inp =>
-      message() = inp.toString
+
+  protected def subscribeEvents() = {
+    if(connector.connected.now) status() = Application.WaitingServer else
+      if(connector.NLPready.now) status() = Application.Ready else
+        status() = Application.WaitingConnection
+
+    connector.input.onChange{
+
+
+      case MessagesNLP.NLPReady(uname)  =>
+        status() = Application.Ready
+
+      case con: MessagesNLP.Connected =>
+        if(connector.NLPready.now) {
+          dom.console.error("Connection and ready to run server in the same time!")
+        } else status() = Application.WaitingServer
+
+      case con: MessagesNLP.Disconnected =>
+        status() = Application.WaitingConnection
+
+
+      case inp @ MessagesNLP.DocumentAnnotations(doc, mentions) =>
+        message() = pprint.tokenize(inp.toString, width = 300).mkString("\n")
+        annotations() = inp
+        status() = Application.Ready
+
+      case inp =>
+        message() = inp.toString
+    }
   }
 
-  val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
-
-  val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
-  val elements: Rx[Map[Mention, (String, SVGElement)]] = bratManager.elements
-  import scalajs.js.JSConverters._
-
-  override def bindView(): Unit = {
-    super.bindView()
+  protected def subscribeBrat() = {
 
     bratManager.disp.onDisplaySpanComment {
       case (event, target, id, span, attrib, text, comment, commentType, normalization) =>
@@ -71,7 +125,7 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
       case params =>
         //val arc: Tuple11[MouseEvent, ViewElement, Boolean, String, String, String, Any, Any, Any, Any, Any] = js.Tuple11.toScalaTuple11(tuple)
         println("ARC COMMENT DISPLAY \n " + params)
-        //scalajs.js.debugger()
+      //scalajs.js.debugger()
     }
 
     bratManager.disp.onDisplaySentComment{
@@ -79,6 +133,18 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
         println("display SENT comment" + sent)
         scalajs.js.debugger()
     }
+  }
+
+  val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
+
+  val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
+  val elements: Rx[Map[Mention, (String, SVGElement)]] = bratManager.elements
+  import scalajs.js.JSConverters._
+
+  override def bindView(): Unit = {
+    super.bindView()
+    subscribeEvents()
+    subscribeBrat()
   }
 
  override lazy val injector = defaultInjector

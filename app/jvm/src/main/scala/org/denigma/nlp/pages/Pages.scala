@@ -9,7 +9,7 @@ import play.twirl.api.Html
 class Pages extends Directives with PJax{
 
   def defaultPage: Option[Html] = {
-    Some( html.brat())
+    Some( html.demo())
   }
 
   def index: Route =  pathSingleSlash{ ctx=>
@@ -20,7 +20,7 @@ class Pages extends Directives with PJax{
 
   def brat: Route = pathPrefix("brat" ~ Slash) { ctx=>
     ctx.complete {
-      HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`.withCharset(HttpCharsets.`UTF-8`), html.brat().body  ))
+      HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`.withCharset(HttpCharsets.`UTF-8`), html.demo().body  ))
     }
   }
 

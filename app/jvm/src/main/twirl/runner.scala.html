@@ -1,5 +1,6 @@
+@import org.denigma.nlp.utils.Mode
 @(into:String = "main",leftSidebar:Boolean = false)
-<script src="/resources/bio-nlp-fastopt.js"></script>
+<script src="/resources/bio-nlp@{Mode.current}"></script>
 <script>
         $( document ).ready(function() {
             selectionchange.start();

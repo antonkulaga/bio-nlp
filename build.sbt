@@ -193,10 +193,18 @@ lazy val app = crossProject
     mainClass in Compile := Some("org.denigma.nlp.Main"),
     libraryDependencies ++= Dependencies.compilers.value ++ Dependencies.otherJvm.value,
     scalaJSDevStage := scalaJSDevTaskStage.value,
-    //pipelineStages := Seq(scalaJSProd,gzip),
     (emitSourceMaps in fullOptJS) := true,
-    pipelineStages in Assets := Seq(scalaJSDevStage, gzip), //for run configuration
-    (fullClasspath in Runtime) += (packageBin in Assets).value, //to package production deps
+    pipelineStages in Assets := {
+      val stages = sys.env.get("APP_MODE") match {
+        case Some(str) if str.toLowerCase.startsWith("prod") =>
+          println("PROJECT IS IN PRODUCTION MODE")
+          Seq(scalaJSProd, gzip)
+        case other =>
+          println("PROJECT IS IN DEVELOPMENT MODE")
+          Seq(scalaJSDevStage, gzip)
+      }
+      stages
+    },
     libraryDependencies += "com.lihaoyi" %% "ammonite-ops" % Versions.ammonite,
     libraryDependencies += "com.lihaoyi" %% "ammonite-shell" % Versions.ammonite,
     dependencyOverrides += "org.biopax.paxtools" % "paxtools-core" % Versions.paxtools,

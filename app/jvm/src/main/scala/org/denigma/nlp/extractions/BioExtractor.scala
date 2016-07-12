@@ -1,22 +1,11 @@
 package org.denigma.nlp.extractions
 
 import java.io.{File => JFile}
-import java.util.Date
 
-import better.files._
-import edu.arizona.sista.odin.State
 import edu.arizona.sista.processors.Document
 import edu.arizona.sista.reach._
-import edu.arizona.sista.reach.context.ContextEngineFactory
 import edu.arizona.sista.reach.context.ContextEngineFactory.Engine
-import edu.arizona.sista.reach.extern.export._
 import edu.arizona.sista.reach.mentions._
-import edu.arizona.sista.reach.nxml._
-import org.denigma.nlp.messages.MessagesNLP
-
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-import scala.util.{Failure, Success, Try}
 
 class BioExtractor(config: com.typesafe.config.Config, filePath: String) {
 

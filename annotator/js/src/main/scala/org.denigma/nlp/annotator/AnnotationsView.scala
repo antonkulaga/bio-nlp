@@ -1,17 +1,15 @@
 package org.denigma.nlp.annotator
 
 import org.denigma.binding.binders.Events
-import org.denigma.binding.views.{BindableView, ItemsMapView, ItemsSeqView, UpdatableView}
+import org.denigma.binding.views.{BindableView, ItemsMapView, UpdatableView}
 import org.denigma.controls.code.CodeBinder
 import org.denigma.nlp.messages.Annotations
-import org.denigma.nlp.messages.Annotations.{BioMention, Grounding, Mention}
-import org.denigma.nlp.messages.MessagesNLP.DocumentAnnotations
+import org.denigma.nlp.messages.Annotations.Grounding
 import org.scalajs.dom
-import org.scalajs.dom.{Element, MouseEvent}
 import org.scalajs.dom.raw.{SVGElement, SVGRectElement}
-import rx.Ctx.Owner.Unsafe.Unsafe
+import org.scalajs.dom.{Element, MouseEvent}
 import rx._
-import org.scalajs.dom.svg.Rect
+import scalatags.Text.all._
 
 class AnnotationsView(val elem: Element, val items: Rx[Map[Annotations.Mention, (String, SVGElement)]]) extends ItemsMapView {
   type Item = Annotations.Mention
@@ -27,11 +25,57 @@ class AnnotationsView(val elem: Element, val items: Rx[Map[Annotations.Mention, 
 
 class MentionView(val elem: Element, mention: Annotations.Mention) extends BindableView with UpdatableView[(String, SVGElement)]
 {
-  val code = Var(str(mention))
+  val other = Var(strOther(mention))
   val highlighted = Var(false)
+
+  val labels = Var(mention.labels.foldLeft(""){
+    case (acc, el) => el.trim
+    case (acc, el) => ", " + el.trim
+  })
+
+  val foundBy = Var(mention.foundBy)
+  val arguments = Var(mention.arguments)
+  val interval = Var(mention.tokenInterval.start + " to " + mention.tokenInterval.end)
+
 
   //val value: (String, SVGElement)
 
+  def strOther(men: Annotations.Mention) = mention match {
+    case mention: Annotations.CorefEventMention =>
+      val pick: String = mention.bestPick.map(p=>p.toString).getOrElse("")
+      val foot1 = tr(
+        th("context"),
+        td(mention.context.toString()),
+        th("ground"),
+        td(pick)
+      )
+      val foot2 = tr(
+        th("modifications"),
+        td(mention.modifications.toString()),
+        th("triggered by"),
+        td(mention.trigger.toString)
+      )
+      foot1.render +"\n"+foot2.render
+
+    case mention :Annotations.BioMention =>
+      val pick: String = mention.bestPick.map(p=>p.toString).getOrElse("")
+      val foot1 = tr(
+        th("context"),
+        td(mention.context.toString()),
+        th("modifications"),
+        td(mention.modifications.toString())
+      )
+      val foot2 = tr(
+        th("ground"),
+        td(pick, colspan := 3)
+      )
+      foot1.render +"\n"+foot2.render
+
+    case _ => ""
+
+  }
+
+  /*
   def str(men: Annotations.Mention) = mention match {
     case mention: Annotations.CorefEventMention =>
       "labels: "+mention.labels+"<br>"+
@@ -58,6 +102,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention) extends Binda
       "arguments: "+mention.arguments+"<br>"+
       "intervals: "+mention.tokenInterval+"<br>"
   }
+  */
 
   protected def miriamClick(event: MouseEvent): Unit = mention match {
     case bio: Grounding =>

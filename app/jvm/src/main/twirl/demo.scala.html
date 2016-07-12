@@ -10,9 +10,19 @@
             <div class="field">
                 <textarea  data-bind="text" title="Text to send for annotation:"></textarea>
             </div>
+            <label class="ui blue label"data-show-if="waitingConnection">
+                Waiting for websocket connection...
+            </label>
+            <label class="ui blue label"data-show-if="waitingServer">
+                Waiting for NLP server to start...
+            </label>
             <button class="ui blue labeled icon button" data-event-click="send" data-show-if="ready">
                 <i class="icon edit"></i> Annotate
             </button>
+            <label class="ui blue label"data-show-if="annotating">
+                Annotating...
+            </label>
+
         </div>
         <div class="ui piled teal segment ui reply form">
             <h6>Debug messages:</h6>
@@ -22,16 +32,5 @@
 
         </div>
     </section>
-    <section class="ui column" data-view="annotations">
-        <section data-template="true" class="ui segment" data-class-orange-if="highlighted">
-            <p data-inner-html="code"></p>
-        </section>
-
-    </section>
-
+    @html.annotations()
 </div>
-<footer>
-    <small>
-        NLP part is based on REACH library of The Computational Language Understanding (CLU) Lab at University of Arizona.
-    </small>
-</footer>
