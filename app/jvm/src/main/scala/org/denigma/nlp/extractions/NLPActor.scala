@@ -2,7 +2,7 @@ package org.denigma.nlp.extractions
 
 import java.nio.ByteBuffer
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import better.files.File
 import com.typesafe.config.Config
 import edu.arizona.sista.processors.Document
@@ -10,7 +10,9 @@ import edu.arizona.sista.reach.mentions.BioMention
 import net.ceedubs.ficus.Ficus._
 import org.denigma.nlp.communication.WorkMessages
 import org.denigma.nlp.messages._
+import akka.pattern.pipe
 
+import scala.concurrent.Future
 import scala.language.implicitConversions
 
 class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
@@ -21,7 +23,7 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
   val filePath: String = config.as[Option[String]]("app.files").getOrElse("files/")
 
-  /*lazy */val extractor = new BioExtractor(config.getConfig("nlp"), filePath)
+  lazy val extractor = new BioExtractor(config.getConfig("nlp"), filePath)
 
   println("NLP actor started...")
 
@@ -34,21 +36,21 @@ class NLPActor(config: Config, files: File) extends Actor with ActorLogging{
 
     case MessagesNLP.Annotate(text) =>
       println("annotation received with text = "+text)
-      annotate(text)
-      //cacheSend()
+      //annotate(text)
+      cacheSend()
 
   }
 
   protected def annotate(text: String) = {
-
+    val user: ActorRef = sender
     val (doc: Document, mentions: Seq[BioMention]) = extractor.annotate(text)
     val sentences: Vector[Annotations.Sentence] = doc.sentences.map(converter.sentence2annotation).toVector
     val txt = doc.text.getOrElse(text)
-    val document = Annotations.Document(doc.id.getOrElse(""), sentences, if(txt=="") text else txt)
+    val document = Annotations.Document(doc.id.getOrElse(""), sentences, if (txt == "") text else txt)
     val mens: List[Annotations.Mention] = converter.convert(mentions)
     val message = MessagesNLP.DocumentAnnotations(document, mens)
     save(message)
-    sender ! message
+    message
   }
 
   protected def cacheSend() = {

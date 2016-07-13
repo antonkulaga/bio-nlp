@@ -126,6 +126,8 @@ case class CorefTextBoundMention(
 
     def foundBy: String
 
+    def textFragment = sentence.getSentenceFragmentText(start, end)
+
     def sentence: Sentence
 
     /** index of the first token in the mention */

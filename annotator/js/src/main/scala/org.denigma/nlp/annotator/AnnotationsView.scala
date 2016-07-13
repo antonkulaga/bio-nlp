@@ -5,11 +5,13 @@ import org.denigma.binding.extensions.sq
 import org.denigma.binding.views.{BasicView, BindableView, ItemsMapView, UpdatableView}
 import org.denigma.controls.code.CodeBinder
 import org.denigma.nlp.messages.Annotations
-import org.denigma.nlp.messages.Annotations.{KBResolution, Grounding}
+import org.denigma.nlp.messages.Annotations.{Grounding, KBResolution}
 import org.scalajs.dom
 import org.scalajs.dom.raw.{SVGElement, SVGRectElement}
 import org.scalajs.dom.{Element, MouseEvent}
 import rx._
+
+import scalatags.Text.TypedTag
 import scalatags.Text.all._
 
 
@@ -33,21 +35,54 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
 {
   val other = Var(strOther(mention))
   val highlighted = Var(false)
-  val arguments = Var(mention.arguments.keys.reduce(_+"; "+_))
+  val arguments = Var(mention.arguments.keys.foldLeft(""){
+    case (acc, el) => acc + el + "; "
+  })
+
+  val text: Var[String] = Var(mention.textFragment)
+
+  val label = Var(mention.label)
 
   val labels = Var(mention.labels.foldLeft(""){
     case ("", el) => el.trim
-    case (acc, el) => ", " + el.trim
+    case (acc, el) =>acc + ", " + el.trim
   })
 
   val foundBy = Var(mention.foundBy)
   val interval = Var(mention.tokenInterval.start + " to " + mention.tokenInterval.end)
 
+  protected def mapSeqList(mp: Map[String, Seq[String]]) = {
+    mp.map{
+      case (k, sq) =>
+        div(`class` := "segment",
+          a(`class` := "ui tiny tag label", k),
+          sq.foldLeft(""){
+            case (acc, e)=> acc + e +", "
+          }
+        )
+    }.toList
+  }
+
+  protected def mapList(mp: Map[String, String]) = {
+
+    val els: List[TypedTag[String]] = mp.map{
+      case (k, v) =>
+        a(`class` :="item", div( `class` := "ui teal horizontal label", k), v)
+        /*
+        div( `class` := "ui breadcrumb",
+        div(`class` := "active section", k),
+        i(`class` := "right arrow icon divider"),
+        a(`class` := "section", v)
+      */
+    }.toList
+    div(`class` := "ui divided selection list", els)
+  }
+
   protected def resolution2Row(kb: KBResolution) = {
-    val metaText: String = kb.metaInfo.foldLeft(""){ case (acc, (key, value))=> acc + key +"="+value+ " " }
+    val metaText = mapList(kb.metaInfo)
     val entryText = kb.entry.toString
     tr(
-      td(entryText),
+      td(a(href := kb.entry.url, target := "blank", entryText)),
       td(metaText)
     )
   }
@@ -73,7 +108,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
       val pick= resolution2Table(mention.bestPick.map(List(_)).getOrElse(Nil))
       val foot1 = tr(
         th("context"),
-        td(mention.context.toString()),
+        td(mapSeqList(mention.context)),
         th("ground"),
         td(pick)
       )
@@ -82,7 +117,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
           println("OUTER ELEMENT = "+svg.outerHTML)
           td(a(href := "#"+i))
         case None=>
-          td(mention.trigger.toString)
+          td(mention.trigger.textFragment)
 
       }
 
@@ -98,7 +133,8 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
       )
       val candidates = tr(
         th("candidates"),
-        td(resolution2Table(mention.candidates))
+        td(colspan := 3, resolution2Table(mention.candidates))
+      )
       )
       foot1.render +"\n"+foot2.render+"\n"+candidates.render
 
@@ -109,7 +145,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
       }
       val foot1 = tr(
         th("context"),
-        td(mention.context.toString()),
+        td(mapSeqList(mention.context)),
         th("modifications"),
         td(mods)
       )
@@ -120,7 +156,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
       )
       val candidates = tr(
         th("candidates"),
-        td(resolution2Table(mention.candidates))
+        td(colspan := 3, resolution2Table(mention.candidates))
       )
       foot1.render +"\n"+foot2.render+"\n"+candidates.render
 

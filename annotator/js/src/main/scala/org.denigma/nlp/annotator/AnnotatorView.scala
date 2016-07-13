@@ -134,7 +134,7 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
     bratManager.disp.onDisplaySentComment{
       case sent =>
         println("display SENT comment" + sent)
-        scalajs.js.debugger()
+        //scalajs.js.debugger()
     }
   }
 
