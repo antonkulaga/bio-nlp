@@ -10,12 +10,15 @@ import org.scalajs.dom
 import org.scalajs.dom.raw.{SVGElement, SVGRectElement}
 import org.scalajs.dom.{Element, MouseEvent}
 import rx._
+import org.denigma.binding.extensions._
+import org.denigma.nlp.scrollbar.ScrollerView
 
+import scala.concurrent.duration._
 import scalatags.Text.TypedTag
 import scalatags.Text.all._
 
 
-class AnnotationsView(val elem: Element, val items: Rx[Map[Annotations.Mention, (String, SVGElement)]]) extends ItemsMapView {
+class AnnotationsView(val elem: Element, val items: Rx[Map[Annotations.Mention, (String, SVGElement)]]) extends ItemsMapView  with ScrollerView{
   type Item = Annotations.Mention
   type ItemView = MentionView
 
@@ -26,12 +29,22 @@ class AnnotationsView(val elem: Element, val items: Rx[Map[Annotations.Mention, 
   override def newItemView(item: Item): MentionView = constructItemView(item){
     case (el, _)=>
       resolve(item).foreach{case (str, svg)=> el.id = str+"_item"}
-      new MentionView(el, item, resolve).withBinder(v=>new CodeBinder(v))
+      new MentionView(el, item, resolve, moveToPlace).withBinder(v=>new CodeBinder(v))
   }
+
+  override def bindView() = {
+    super.bindView()
+    subscribeScroller()
+  }
+
+
+  override def scrollPanel: ViewElement = elem
 }
 
 class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix this bad code!
-                  resolve: Annotations.Mention => Option[(String, SVGElement)]) extends BindableView with UpdatableView[(String, SVGElement)]
+                  resolve: Annotations.Mention => Option[(String, SVGElement)],
+                  scrollTo: String=> Unit
+                 ) extends BindableView with UpdatableView[(String, SVGElement)]
 {
   val other = Var(strOther(mention))
   val highlighted = Var(false)
@@ -82,7 +95,7 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
     val metaText = mapList(kb.metaInfo)
     val entryText = kb.entry.toString
     tr(
-      td(a(href := kb.entry.url, target := "blank", entryText)),
+      td(a(href := kb.entry.url, target := "_blank", entryText)),
       td(metaText)
     )
   }
@@ -134,7 +147,6 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
       val candidates = tr(
         th("candidates"),
         td(colspan := 3, resolution2Table(mention.candidates))
-      )
       )
       foot1.render +"\n"+foot2.render+"\n"+candidates.render
 
@@ -213,6 +225,13 @@ class MentionView(val elem: Element, mention: Annotations.Mention, //TODO: fix t
 
   protected def onMouseEnter(event: MouseEvent): Unit = {
     highlighted() = true
+  }
+  highlighted.afterLastChange(700 milliseconds){
+    case true =>
+      println("scrolling to "+elem.id)
+      scrollTo(elem.id)
+    case false => //do nothing
+
   }
 
 

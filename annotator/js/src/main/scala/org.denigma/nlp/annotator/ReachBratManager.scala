@@ -34,7 +34,9 @@ class ReachBratManager(container: String, webFontURLs: List[String], val annotat
   }
 
   val mentions: Dynamic[Map[Mention, String]] = annotations.map(ans=>ans.mentionsWithIDs)
+
   val named: Var[Map[String, SVGElement]] =  Var(Map.empty[String, SVGElement])
+
   val elements: Rx[Map[Mention, (String, SVGElement)]] = named.map{ case mp =>
     mentions.now.collect{
       case (men, id) if mp.contains(id) => men -> (id, mp(id))

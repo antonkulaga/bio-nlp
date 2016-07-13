@@ -81,7 +81,7 @@ trait SharedVersions
 
 trait WebJarsVersions{
 
-	val jquery =  "3.0.0"
+	val jquery =  "2.2.4"//"3.0.0"
 
 	val jqueryUI = "1.11.4"
 
@@ -97,6 +97,7 @@ trait WebJarsVersions{
 
 	val d3js: String = "3.5.12"
 
+	val malihuScrollBar: String = "3.1.5"
 
 }
 

@@ -8,7 +8,7 @@
         <div class="ui reply form">
             <h6>Text to send for annotation:</h6>
             <div class="field">
-                <textarea  data-bind="text" title="Text to send for annotation:"></textarea>
+                <textarea id="text" data-bind="text" title="Text to send for annotation:"></textarea>
             </div>
             <label class="ui blue label"data-show-if="waitingConnection">
                 Waiting for websocket connection...
@@ -24,7 +24,7 @@
             </label>
 
         </div>
-        <div class="ui piled teal segment ui reply form">
+        <div class="ui piled teal segment ui reply form mCustomScrollbar" data-mcs-theme="dark" id="debug">
             <h6>Debug messages:</h6>
             <div class="field">
                 <textarea  data-code="message" title="received messages:"></textarea>

@@ -1,8 +1,9 @@
 package org.denigma.nlp.pages
 
-import org.denigma.controls.papers.{TextLayerStyles, MediaQueries}
+import org.denigma.controls.papers.{MediaQueries, TextLayerStyles}
 
 import scalacss.Defaults._
+import scalacss.LengthUnit.vh
 
 object MyStyles extends TextLayerStyles with MediaQueries{
   import dsl._
@@ -15,6 +16,19 @@ object MyStyles extends TextLayerStyles with MediaQueries{
     overflowY.auto  important,
     padding(0 px)  important
     )
+  "#annotations" -(
+    overflowY.visible,
+    minHeight(80 vh)
+    )
+
+  "#debug" - (
+    maxHeight(30 vh)
+    )
+
+  "#text" -(
+    minHeight(15 em)
+    )
+
 
   /*
   val totalWidth = 3200.0 px

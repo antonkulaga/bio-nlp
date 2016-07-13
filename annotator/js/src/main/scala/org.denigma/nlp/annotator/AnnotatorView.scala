@@ -11,6 +11,7 @@ import org.denigma.nlp.communication.WebSocketNLPTransport
 import org.denigma.nlp.messages.Annotations.Mention
 import org.denigma.nlp.messages.MessagesNLP.KeepAlive
 import org.denigma.nlp.messages._
+import org.denigma.nlp.scrollbar.ScrollerView
 import org.querki.jquery.{JQuery, JQueryEventObject}
 import org.scalajs.dom
 import org.scalajs.dom.raw.SVGElement
@@ -140,8 +141,8 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
 
   val annotations: Var[MessagesNLP.DocumentAnnotations] = Var( MessagesNLP.DocumentAnnotations.empty)
 
-  val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
-  val elements: Rx[Map[Mention, (String, SVGElement)]] = bratManager.elements
+  lazy val bratManager = new ReachBratManager("annotation", webFontURLs, annotations)
+  lazy val elements: Rx[Map[Mention, (String, SVGElement)]] = bratManager.elements
   import scalajs.js.JSConverters._
 
   override def bindView(): Unit = {
@@ -150,8 +151,8 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
     subscribeBrat()
   }
 
+
  override lazy val injector = defaultInjector
    .register("annotations")((el, args) => new AnnotationsView(el, elements).withBinder(new CodeBinder(_)))
-
 
 }

@@ -48,7 +48,9 @@ object Dependencies {
 
 		"org.webjars" % "jquery" % Versions.jquery,
 
-		"org.webjars" % "jquery-svg" % Versions.jquerySVG
+		"org.webjars" % "jquery-svg" % Versions.jquerySVG,
+
+		"org.webjars.bower" % "malihu-custom-scrollbar-plugin" % Versions.malihuScrollBar
 
 	))
 
