@@ -16,11 +16,18 @@ object MessagesNLP {
         .addConcreteType[Disconnected]
         .addConcreteType[Annotate]
         .addConcreteType[NLPReady]
+        .addConcreteType[KeepAlive]
         .addConcreteType[DocumentAnnotations]
 
   }
 
   trait Message
+
+  object KeepAlive {
+    import boopickle.DefaultBasic._
+    implicit val classPickler: Pickler[KeepAlive] = boopickle.Default.generatePickler[KeepAlive]
+  }
+  case class KeepAlive(username: String) extends Message //to overcome buggy akka timeouts
 
 
   object DocumentAnnotations {

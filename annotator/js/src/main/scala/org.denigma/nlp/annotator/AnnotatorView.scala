@@ -9,6 +9,7 @@ import org.denigma.nlp.annotator
 import org.denigma.nlp.annotator.Application.WaitingServer
 import org.denigma.nlp.communication.WebSocketNLPTransport
 import org.denigma.nlp.messages.Annotations.Mention
+import org.denigma.nlp.messages.MessagesNLP.KeepAlive
 import org.denigma.nlp.messages._
 import org.querki.jquery.{JQuery, JQueryEventObject}
 import org.scalajs.dom
@@ -107,6 +108,8 @@ class AnnotatorView(val elem: Element, val connector: WebSocketNLPTransport) ext
         message() = pprint.tokenize(inp.toString, width = 300).mkString("\n")
         annotations() = inp
         status() = Application.Ready
+
+      case KeepAlive(username) => //do nothing
 
       case inp =>
         message() = inp.toString

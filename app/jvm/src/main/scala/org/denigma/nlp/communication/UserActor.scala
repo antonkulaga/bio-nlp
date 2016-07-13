@@ -7,7 +7,9 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage}
 import akka.stream.actor.ActorPublisherMessage
 import akka.util.ByteString
 import boopickle.DefaultBasic._
+import org.denigma.nlp.messages.MessagesNLP.KeepAlive
 import org.denigma.nlp.messages._
+import scala.concurrent.duration._
 
 import scala.util.{Failure, Success}
 
@@ -90,5 +92,9 @@ class UserActor(val username: String, nlp: ActorRef) extends Messenger
 
   override def receive: Receive =  onTextMessage.orElse(onBinaryMessage).orElse(onServerMessage).orElse(onOtherMessage)
 
-
+  context.system.scheduler.schedule(10 seconds, 20 seconds){ //TODO: rewrite to timeout configs
+    println(s"keep $username alive")
+    val d = Pickle.intoBytes[MessagesNLP.Message](KeepAlive(username))
+    send(d)
+  }
 }

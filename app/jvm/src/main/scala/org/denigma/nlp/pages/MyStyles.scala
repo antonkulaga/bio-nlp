@@ -7,6 +7,16 @@ import scalacss.Defaults._
 object MyStyles extends TextLayerStyles with MediaQueries{
   import dsl._
 
+  ".attached.tab.segment" -(
+    overflowY.auto
+    )
+
+  ".ui.column" -(
+    overflowY.auto  important,
+    padding(0 px)  important
+    )
+
+  /*
   val totalWidth = 3200.0 px
 
   "#main" -(
@@ -17,15 +27,6 @@ object MyStyles extends TextLayerStyles with MediaQueries{
   ".graph" -(
     borderColor(blue),
     borderWidth(3 px)
-    )
-
-  ".attached.tab.segment" -(
-      overflowY.auto
-    )
-
-  ".ui.column" -(
-    overflowY.auto  important,
-    padding(0 px)  important
     )
 
 
@@ -83,4 +84,14 @@ object MyStyles extends TextLayerStyles with MediaQueries{
   ".project.content" -{
     cursor.pointer
   }
+  */
+
+  "html"-(
+    onTiny -fontSize(8 pt),
+    onLittle -fontSize(9 pt),
+    onSmall -fontSize(10 pt),
+    onMedium -fontSize(11 pt),
+    onLarge -fontSize(12 pt)
+    )
+
 }
